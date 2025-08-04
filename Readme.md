@@ -31,7 +31,7 @@ GitHub Link: https://github.com/Apollo-Level2-Web-Dev/ph-tour-management-system-
 
 
 ## 35-3 Selecting the Right Tech Stack for the Project
-- We have Done Backend Using Modular Patter 
+- We have Done Backend Using Modular Pattern
 
 ### What we will do in frontend?
 - There is no specific pattern for frontend. We will change time  by time. We will just maintain a structure
@@ -47,5 +47,22 @@ GitHub Link: https://github.com/Apollo-Level2-Web-Dev/ph-tour-management-system-
 
 
 
-#### `React Aria` `MUI Base` these are some headless. we can pick and make our own design bu the user iteration will be done by headless
+#### `React Aria` `MUI Base` these are some headless. we can pick and make our own design but the user iteration will be done by headless
 
+
+## 35-4 Backend Setup and Configuration
+- Clone THe REquired Branch Of The Backend
+
+```
+git clone https://github.com/Sazid60/PH-TOUR-MANAGEMENT-BACKEND.git --branch Bac-8
+```
+- Install The package Lock 
+
+```
+npm i 
+```
+- It is Recommended To Use Only One package Log THat has been used iN this project like `npm`, `bun` 
+
+- add the env 
+
+- Run The Project. WE can use any run time like `bun`, `npm` 
