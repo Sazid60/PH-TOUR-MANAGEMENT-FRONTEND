@@ -30,4 +30,22 @@ GitHub Link: https://github.com/Apollo-Level2-Web-Dev/ph-tour-management-system-
 - We will push the code in git then the pipeline will push the code in repo after checking the code and will automatically trigger the deployment. 
 
 
-## 
+## 35-3 Selecting the Right Tech Stack for the Project
+- We have Done Backend Using Modular Patter 
+
+### What we will do in frontend?
+- There is no specific pattern for frontend. We will change time  by time. We will just maintain a structure
+
+### There are some Major works in frontend
+- How do we handle Auth (social, google, custom, email pass) in backend we have used passport.js. WE can explore `betterauth` for another system of frontend. Auth can be `Session Base` or `Token Based`. In our bakend we have use token based.
+- How Do we handle the State (depends on ecosystem)
+    1. Local State (for react - Redux, zustand)
+    2. Remote State (Data Fetching in react - tanstack, RTK Query)
+- How do we handle The View
+    1. Raw Css
+    2. Use Frameworks
+
+
+
+#### `React Aria` `MUI Base` these are some headless. we can pick and make our own design bu the user iteration will be done by headless
+
