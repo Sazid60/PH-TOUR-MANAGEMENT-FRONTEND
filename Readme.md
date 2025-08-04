@@ -67,7 +67,7 @@ npm i
 
 - Run The Project. WE can use any run time like `bun`, `npm` 
 
-## 35-5 Backend Setup and Configuration
+## 35-5 Introduction to JavaScript Package Managers: npm, Yarn, pnpm, and Bun
 -  Package Manager 
     1. Npm comes default wth node installation 
     2. except npm we have `yarn`, `bun`, `pnp`
@@ -79,3 +79,135 @@ npm i
 
 #### We Will Use Bun IN Out Project as its faster and we will use vite 
 - vite uses `ESM(Es Module)` for bundling and `Live Server` for hot module replacement(Means the change portion will be changed only). Vite is a frontend Tooling created by the creator of Vue js.
+
+
+## 36-6 Project Scaffolding with Vite, React, and ShadCN
+
+- Install bun in Windows
+
+```
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+
+- Install bun in Linux
+
+```
+curl -fsSL https://bun.sh/install | bash
+```
+
+- install the vite first 
+
+```
+bun create vite
+```
+- Select React 
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+- Install 
+
+```
+bun install
+```
+
+- Run The Project 
+
+```
+bun run dev
+```
+- THe node Modules folder will come after installing the bun 
+
+- Install The REact Router Data Mode 
+
+```
+bun add react-router
+```
+- instal hook form 
+
+```
+bun add react-hook-form
+```
+- Install ShadCn and tailwind css
+
+```
+bun add tailwindcss @tailwindcss/vite
+```
+- add this to src -> index.css
+
+```
+@import "tailwindcss";
+```
+- Clean THe App.tsx
+
+- add these to tsconfig.json file 
+
+```json
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+
+- add this to tsconfig.app.json
+
+```json
+ "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+```
+
+- Update vite.config.ts
+
+```
+bun add -D @types/node
+```
+
+- add this to vite.config.ts
+
+```ts
+import path from "path"
+import tailwindcss from "@tailwindcss/vite"
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vite"
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+})
+```
+- Now Init The Shadcn 
+
+```
+bunx --bun shadcn@latest init
+
+```
+
+- Install Shadcn Button
+
+```
+bunx --bun shadcn@latest add button
+```
