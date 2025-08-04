@@ -66,3 +66,16 @@ npm i
 - add the env 
 
 - Run The Project. WE can use any run time like `bun`, `npm` 
+
+## 35-5 Backend Setup and Configuration
+-  Package Manager 
+    1. Npm comes default wth node installation 
+    2. except npm we have `yarn`, `bun`, `pnp`
+    3. Npm is just a package manager
+    4. Developers makes a packages in a registry. From the registry we install a package in or machine. THe Problems with npm is its slow and not secure because anyone can upload npm package. Another problem of npm is it makes node modules for each installation and this is taking more disk space.
+    5. For Solving the problems of `npm` Facebook made `yarn` which is faster and safer and this is also a package manager. Two Types of yarn 1. classic 2. v2+. In yarn we can plug and play not like creating node_modules
+    6. `pnpm` is wa more faster than yarn and npm and its much more disk efficient. It minimizes the disk space usage using `simlink`. Simlink works like it do not downloads the package rather it links the package. It stores the package information in caching as well. using the `pnpm` in `monorepo` is much easier.
+    7. `bun` is beast. It at a time a `package manager`, `task runner`, `ts support that means it also a transpiler`. Bun i the fastest among all of these. bun is wrinnen in zig programming language.
+
+#### We Will Use Bun IN Out Project as its faster and we will use vite 
+- vite uses `ESM(Es Module)` for bundling and `Live Server` for hot module replacement(Means the change portion will be changed only). Vite is a frontend Tooling created by the creator of Vue js.
