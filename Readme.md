@@ -211,3 +211,92 @@ bunx --bun shadcn@latest init
 ```
 bunx --bun shadcn@latest add button
 ```
+
+## 35-7 Configuring React Router for Page Navigation
+- By default frontend runs in port 5173. we can change this to 5000 if we want 
+-In vite.config.ts add this  
+
+```ts 
+  server: {
+    port: 3000,
+  }
+```
+
+```ts 
+import path from "path"
+import tailwindcss from "@tailwindcss/vite"
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vite"
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  server: {
+    port: 3000,
+  }
+})
+```
+- Create a router file in routes -> index.ts 
+
+```ts
+import App from "@/App";
+import About from "@/pages/About";
+import { createBrowserRouter } from "react-router";
+
+export const router = createBrowserRouter(
+    [
+        {
+            Component: App,
+            path: "/",
+            children : [
+                {
+                    Component : About,
+                    path : "about"
+                }
+            ]
+        }
+    ]
+)
+```
+
+- Grab it main.tsx
+
+```tsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import { RouterProvider } from 'react-router'
+import { router } from './routes/index.tsx'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <RouterProvider router={router}/>
+  </StrictMode>,
+)
+
+```
+
+- set the Outlet 
+
+```ts 
+
+import { Outlet } from 'react-router';
+
+
+
+function App() {
+  return (
+    <div className="flex min-h-svh flex-col items-center justify-center">
+      <h1>This is App Component!</h1>
+      <Outlet/>
+    </div>
+  )
+}
+
+export default App
+```
