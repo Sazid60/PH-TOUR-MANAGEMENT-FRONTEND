@@ -387,3 +387,49 @@ export default function AdminLayout() {
 ## 35-9 Defining Project Folder Structure and Development Methodology
 - Lets make all of these reuseable 
 
+```
+└── Frontend-App/
+    ├── bun.lock
+    ├── components.json
+    ├── eslint.config.js
+    ├── image-1.png
+    ├── image.png
+    ├── index.html
+    ├── package.json
+    ├── Readme.md
+    ├── tsconfig.app.json
+    ├── tsconfig.json
+    ├── tsconfig.node.json
+    ├── vite.config.ts
+    ├── src/
+    │   ├── App.css
+    │   ├── App.tsx
+    │   ├── index.css
+    │   ├── main.tsx
+    │   ├── vite-env.d.ts
+    │   ├── utils/
+    │   │   └── generateRoutes.tsx
+    │   ├── routes/
+    │   │   └── index.tsx
+    │   ├── pages/
+    │   │   ├── About.tsx
+    │   │   └── Analytics.tsx
+    │   ├── lib/
+    │   │   └── utils.ts
+    │   └── components/
+    │       ├── ui/
+    │       │   └── button.tsx
+    │       ├── layouts/
+    │       │   ├── AdminLayout.tsx
+    │       │   ├── CommonLayout.tsx
+    │       │   ├── Footer.tsx
+    │       │   └── Navbar.tsx
+    │       └── modules/
+    │           ├── homepage/
+    │           │   └── HeroSection.tsx
+    │           └── about/
+    │               └── About.tsx
+    └── public/
+        └── vite.svg
+
+```
