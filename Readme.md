@@ -437,10 +437,52 @@ export default function AdminLayout() {
 - for making the process faster we will use
 - [Hyper Ui ](https://www.hyperui.dev/)
 - [Origin Ui](https://originui.com/) - kind of Extension of Shadcn
+
   1. For Installation We have to use
+
   ```
   bunx --bun shadcn@latest add https://originui.com/r/comp-577.json
   ```
-  2. By default it will bge stored in outer folder we have to rename and use it in desired folder. 
-  
+
+  2. By default it will bge stored in outer folder we have to rename and use it in desired folder.
+
 - [Logo Ipsum](https://logoipsum.com/)
+
+## 35-11 Refining Spacing and Alignment for Visual Consistency
+
+- Use this for making the footer stick to the bottom of the screen always
+
+```tsx
+import type { ReactNode } from "react";
+
+import Footer from "./Footer";
+import Navbar from "./Navbar";
+
+interface IProps {
+  children: ReactNode; // we can use ReactElements as well but this only accepts tsx or jsx
+}
+
+export default function CommonLayout({ children }: IProps) {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="grow-1">{children}</div>
+      <Footer />
+    </div>
+  );
+}
+```
+
+- use container for making all the section follow a same structure 
+
+```tsx
+
+
+export default function About() {
+  return (
+    <div className="container mx-auto px-4 py-16">
+      This  is about page
+    </div>
+  )
+}
+```
