@@ -383,3 +383,7 @@ export default function AdminLayout() {
 
 
 ```
+
+## 35-9 Defining Project Folder Structure and Development Methodology
+- Lets make all of these reuseable 
+
