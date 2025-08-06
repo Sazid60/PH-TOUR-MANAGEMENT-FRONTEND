@@ -365,27 +365,25 @@ export default function CommonLayout({ children }: IProps) {
   );
 }
 ```
+
 - adminLayout.tsx
 
 ```tsx
-
 import { Outlet } from "react-router";
-
 
 export default function AdminLayout() {
   return (
     <div>
-        <h1>This is Admin Layout</h1>
-        <Outlet/>
+      <h1>This is Admin Layout</h1>
+      <Outlet />
     </div>
-  )
+  );
 }
-
-
 ```
 
 ## 35-9 Defining Project Folder Structure and Development Methodology
-- Lets make all of these reuseable 
+
+- Lets make all of these reuseable
 
 ```
 └── Frontend-App/
@@ -433,3 +431,16 @@ export default function AdminLayout() {
         └── vite.svg
 
 ```
+
+## 35-10 Building Core UI Components: Navbar and Footer with Origin UI and Hyper UI
+
+- for making the process faster we will use
+- [Hyper Ui ](https://www.hyperui.dev/)
+- [Origin Ui](https://originui.com/) - kind of Extension of Shadcn
+  1. For Installation We have to use
+  ```
+  bunx --bun shadcn@latest add https://originui.com/r/comp-577.json
+  ```
+  2. By default it will bge stored in outer folder we have to rename and use it in desired folder. 
+  
+- [Logo Ipsum](https://logoipsum.com/)

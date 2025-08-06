@@ -6,7 +6,7 @@ import CommonLayout from './components/layouts/CommonLayout';
 
 function App() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
+    <div className="">
       <CommonLayout>
         <Outlet />
       </CommonLayout>
