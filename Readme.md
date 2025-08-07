@@ -979,3 +979,102 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
   );
 }
 ```
+
+## 36-7 Setting Up Redux for State Management
+
+- Install the react-redux and redux-toolkit 
+
+```
+bun add  @reduxjs/toolkit react-redux
+```
+- CReate Store 
+
+```ts
+import { configureStore } from '@reduxjs/toolkit'
+
+export const store = configureStore({
+    reducer: {},
+})
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch
+```
+- wrap with redux provider 
+
+```tsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import { RouterProvider } from 'react-router'
+import { router } from './routes/index.tsx'
+import { ThemeProvider } from './providers/theme.provider.tsx'
+import { Provider as ReduxProvider } from "react-redux"
+import { store } from './redux/store.ts'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <ReduxProvider store={store}>
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </ReduxProvider>
+  </StrictMode>,
+)
+
+```
+- create a hook for redux 
+
+```ts
+import { useDispatch, useSelector } from 'react-redux'
+import type { RootState, AppDispatch } from './store'
+
+// Use throughout your app instead of plain `useDispatch` and `useSelector`
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
+export const useAppSelector = useSelector.withTypes<RootState>()
+```
+- create base Api 
+
+```ts
+
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+
+
+
+export const baseApi = createApi({
+  reducerPath: 'baseApi',
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api/v1' }), // we will use axios here. 
+  endpoints: () => ({}),
+})
+
+
+```
+
+- add middleware in store 
+
+```ts 
+
+import { configureStore } from '@reduxjs/toolkit'
+import { baseApi } from './baseApi'
+
+export const store = configureStore({
+    reducer: {
+      [baseApi.reducerPath]: baseApi.reducer,
+
+    },
+    middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(baseApi.middleware),
+})
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch
+// optional, but required for refetchOnFocus/refetchOnReconnect behaviors
+// see `setupListeners` docs - takes an optional callback as the 2nd arg for customization
+setupListeners(store.dispatch)
+```
+- WE will use axios for fetch base api 
+  1. It Gives Us Interceptors(can not be done using regular fetch (used for token)), 
+  2. IT gives us setting base settings 
