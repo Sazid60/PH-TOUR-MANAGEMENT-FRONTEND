@@ -124,21 +124,20 @@ export const useTheme = () => {
   return context;
 };
 ```
+
 - Final version of theme.provider.ts
 
 ```tsx
-import { ThemeProviderContext } from "@/context/theme.context"
-import { useEffect, useState } from "react"
+import { ThemeProviderContext } from "@/context/theme.context";
+import { useEffect, useState } from "react";
 
-export type Theme = "dark" | "light" | "system"
+export type Theme = "dark" | "light" | "system";
 
 type ThemeProviderProps = {
-  children: React.ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
-}
-
-
+  children: React.ReactNode;
+  defaultTheme?: Theme;
+  storageKey?: string;
+};
 
 export function ThemeProvider({
   children,
@@ -148,43 +147,42 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  )
+  );
 
   useEffect(() => {
-    const root = window.document.documentElement
+    const root = window.document.documentElement;
 
-    root.classList.remove("light", "dark")
+    root.classList.remove("light", "dark");
 
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
-        : "light"
+        : "light";
 
-      root.classList.add(systemTheme)
-      return
+      root.classList.add(systemTheme);
+      return;
     }
 
-    root.classList.add(theme)
-  }, [theme])
+    root.classList.add(theme);
+  }, [theme]);
 
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme)
-      setTheme(theme)
+      localStorage.setItem(storageKey, theme);
+      setTheme(theme);
     },
-  }
+  };
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
       {children}
     </ThemeProviderContext.Provider>
-  )
+  );
 }
-
-
 ```
+
 - Wrap The app with the theme provider main.tsx
 
 ```tsx
@@ -245,7 +243,9 @@ export function ModeToggle() {
   );
 }
 ```
+
 ## 36-2 Refactoring Layout
+
 - Update in Navbar.tsx
 
 ```tsx
@@ -363,7 +363,6 @@ export default function Navbar() {
 
 - See Login page and Register page and some changes in routes
 
-
 ## 36-3 Integrating React Hook Form with ShadCN Components
 
 - Install the Hookfrom
@@ -371,12 +370,14 @@ export default function Navbar() {
 ```
 bunx --bun shadcn@latest add form
 ```
-- if we see manual installation command we can see what are installed 
+
+- if we see manual installation command we can see what are installed
 
 ```
 bun add @radix-ui/react-label @radix-ui/react-slot react-hook-form @hookform/resolvers zod
 ```
-- install Input 
+
+- install Input
 
 ```
 bunx --bun shadcn@latest add input
@@ -386,20 +387,29 @@ bunx --bun shadcn@latest add input
 
 ```tsx
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 
-
-export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-
-  const form = useForm()
+export function RegisterForm({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  const form = useForm();
 
   const onSubmit = (data) => {
-    console.log(data)
-  }
+    console.log(data);
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -423,9 +433,9 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                  {/*<Input placeholder="shadcn" onBlur= {field.onBlur} onChange ={field.onChange} />*/}
+                    {/*<Input placeholder="shadcn" onBlur= {field.onBlur} onChange ={field.onChange} />*/}
 
-                  {/* This is the detailed method and can be done by spreading as field holds all. */}
+                    {/* This is the detailed method and can be done by spreading as field holds all. */}
                     <Input placeholder="shadcn" {...field} />
                   </FormControl>
                   <FormDescription>
@@ -463,8 +473,10 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
   );
 }
 ```
+
 ## 36-4 Form Validation Using Zod
-- During installation we have installed zod resolver. This will take the zod schema and connect with the form 
+
+- During installation we have installed zod resolver. This will take the zod schema and connect with the form
 - WE can use the resolver with zod, joi and anything we want. but for this project we will be using zod with the resolver.
 
 - we have to deal with a problem that we have to make the inputs controlled by defining default values. WE can set the default values in input or overall form default value. Keeping in centralized place is more convenient.
@@ -473,25 +485,35 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
 
 ```tsx
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useForm} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router";
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 const formSchema = z.object({
   name: z.string().min(2).max(50),
-})
+});
 
-export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-
+export function RegisterForm({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: ""
-    }
-  })
+      name: "",
+    },
+  });
 
   // const onSubmit : SubmitHandler<FieldValues> = (data) => {
   //   //when we do not want to use zod schema then we can directly use this SubmitHandler<FieldValues>
@@ -500,10 +522,9 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
   // }
 
   // another way is inferring types from the schema inside the useForm and the data
-  const onSubmit = (data : z.infer<typeof formSchema>) => {
-
-    console.log(data)
-  }
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    console.log(data);
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
@@ -569,6 +590,246 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
 
 ```tsx
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+const formSchema = z.object({
+  name: z.string().min(3, { error: "Name Is Too Short!" }).max(50),
+  email: z.email(),
+  password: z.string().min(8, { error: "Password Is Too Short!" }),
+  confirmPassword: z
+    .string()
+    .min(8, { error: "Confirm Password Is Too Short!" }),
+});
+
+export function RegisterForm({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  // const onSubmit : SubmitHandler<FieldValues> = (data) => {
+  //   //when we do not want to use zod schema then we can directly use this SubmitHandler<FieldValues>
+
+  //   console.log(data)
+  // }
+
+  // another way is inferring types from the schema inside the useForm and the data
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    console.log(data);
+  };
+  return (
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="text-2xl font-bold">Register your account</h1>
+        <p className="text-sm text-muted-foreground">
+          Enter your details to create an account
+        </p>
+      </div>
+
+      <div className="grid gap-6">
+        <Form {...form}>
+          {/* connecting hook form with the shadCN from component  */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* You're passing your custom onSubmit function to let React Hook Form execute it with form values after validation. */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="your name" {...field} />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    Your Name
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your Email" type="email" {...field} />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    Your Email
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Your Password"
+                      type="password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    Your Password
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="confirm Password"
+                      type="password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    Confirm Yore password
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full">
+              Submit
+            </Button>
+          </form>
+        </Form>
+        <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+          <span className="relative z-10 bg-background px-2 text-muted-foreground">
+            Or continue with
+          </span>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full cursor-pointer"
+        >
+          Login with Google
+        </Button>
+      </div>
+
+      <div className="text-center text-sm">
+        Already have an account?{" "}
+        <Link to="/login" className="underline underline-offset-4">
+          Login
+        </Link>
+      </div>
+    </div>
+  );
+}
+```
+
+## 36-6 Enhancing Password and Confirm Password Components
+
+- origin ui input for password show hide toggling
+
+```
+bunx --bun shadcn@latest add https://originui.com/r/comp-23.json
+```
+
+- import the password origin ui input component to shadcn ui folder
+
+```tsx
+import { useId, useState } from "react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+export default function Password({ ...field }) {
+  const id = useId();
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+
+  return (
+    <div className="*:not-first:mt-2">
+      <Label htmlFor={id}>Show/hide password input</Label>
+      <div className="relative">
+        <Input
+          id={id}
+          className="pe-9"
+          placeholder="Password"
+          type={isVisible ? "text" : "password"}
+          {...field}
+        />
+        <button
+          className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+          type="button"
+          onClick={toggleVisibility}
+          aria-label={isVisible ? "Hide password" : "Show password"}
+          aria-pressed={isVisible}
+          aria-controls="password"
+        >
+          {isVisible ? (
+            <EyeOffIcon size={16} aria-hidden="true" />
+          ) : (
+            <EyeIcon size={16} aria-hidden="true" />
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+- For matching password will us refine method of Zod. WE can use refine with single string or we can use refine objects as well.
+
+```tsx
+const formSchema = z
+  .object({
+    name: z.string().min(3, { error: "Name Is Too Short!" }).max(50),
+    email: z.email(),
+    password: z.string().min(8, { error: "Password Is Too Short!" }),
+    confirmPassword: z
+      .string()
+      .min(8, { error: "Confirm Password Is Too Short!" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+```
+- REgisterForm.tsx
+
+```tsx
+import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -576,12 +837,16 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import Password from "@/components/ui/Password";
 const formSchema = z.object({
-  name: z.string().min(3,{ error : "Name Is Too Short!"}).max(50),
+  name: z.string().min(3, { error: "Name Is Too Short!" }).max(50),
   email: z.email(),
-  password: z.string().min(8, { error : "Password Is Too Short!"}),
-  confirmPassword: z.string().min(8, { error : "Confirm Password Is Too Short!"})
-})
+  password: z.string().min(8, { error: "Password Is Too Short!" }),
+  confirmPassword: z.string().min(8, { error: "Confirm Password Is Too Short!" })
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"]
+});
 
 export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
 
@@ -659,7 +924,8 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your Password" type="password" {...field} />
+                    {/* <Input placeholder="Your Password" type="password" {...field} /> */}
+                    <Password  {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     Your Password
@@ -675,7 +941,8 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="confirm Password" type="password" {...field} />
+                    {/* <Input placeholder="confirm Password" type="password" {...field} /> */}
+                    <Password  {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     Confirm Yore password

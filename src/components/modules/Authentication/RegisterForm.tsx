@@ -6,12 +6,16 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import Password from "@/components/ui/Password";
 const formSchema = z.object({
-  name: z.string().min(3,{ error : "Name Is Too Short!"}).max(50),
+  name: z.string().min(3, { error: "Name Is Too Short!" }).max(50),
   email: z.email(),
-  password: z.string().min(8, { error : "Password Is Too Short!"}),
-  confirmPassword: z.string().min(8, { error : "Confirm Password Is Too Short!"})
-})
+  password: z.string().min(8, { error: "Password Is Too Short!" }),
+  confirmPassword: z.string().min(8, { error: "Confirm Password Is Too Short!" })
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"]
+});
 
 export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
 
@@ -89,7 +93,8 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your Password" type="password" {...field} />
+                    {/* <Input placeholder="Your Password" type="password" {...field} /> */}
+                    <Password  {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     Your Password
@@ -105,7 +110,8 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="confirm Password" type="password" {...field} />
+                    {/* <Input placeholder="confirm Password" type="password" {...field} /> */}
+                    <Password  {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     Confirm Yore password
