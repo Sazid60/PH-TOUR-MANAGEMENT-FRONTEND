@@ -2,12 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useForm} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 const formSchema = z.object({
-  name: z.string().min(2).max(50),
+  name: z.string().min(3,{ error : "Name Is Too Short!"}).max(50),
+  email: z.email(),
+  password: z.string().min(8, { error : "Password Is Too Short!"}),
+  confirmPassword: z.string().min(8, { error : "Confirm Password Is Too Short!"})
 })
 
 export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -15,7 +18,10 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: ""
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: ""
     }
   })
 
@@ -26,7 +32,7 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
   // }
 
   // another way is inferring types from the schema inside the useForm and the data
-  const onSubmit = (data : z.infer<typeof formSchema>) => {
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
 
     console.log(data)
   }
@@ -42,7 +48,7 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
       <div className="grid gap-6">
         <Form {...form}>
           {/* connecting hook form with the shadCN from component  */}
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* You're passing your custom onSubmit function to let React Hook Form execute it with form values after validation. */}
             <FormField
               control={form.control}
@@ -51,16 +57,64 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="your name" {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
-                    This is your public display name.
+                    Your Name
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your Email" type="email" {...field} />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    Your Email
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your Password" type="password" {...field} />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    Your Password
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="confirm Password" type="password" {...field} />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    Confirm Yore password
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full">Submit</Button>
           </form>
         </Form>
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
