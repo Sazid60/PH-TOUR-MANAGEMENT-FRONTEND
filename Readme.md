@@ -473,6 +473,7 @@ export function RegisterForm({
   );
 }
 ```
+
 ## 36-4 Form Validation Using Zod
 
 ## 36-4 Form Validation Using Zod
@@ -827,39 +828,54 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 ```
+
 - REgisterForm.tsx
 
 ```tsx
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Password from "@/components/ui/Password";
-const formSchema = z.object({
-  name: z.string().min(3, { error: "Name Is Too Short!" }).max(50),
-  email: z.email(),
-  password: z.string().min(8, { error: "Password Is Too Short!" }),
-  confirmPassword: z.string().min(8, { error: "Confirm Password Is Too Short!" })
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"]
-});
+const formSchema = z
+  .object({
+    name: z.string().min(3, { error: "Name Is Too Short!" }).max(50),
+    email: z.email(),
+    password: z.string().min(8, { error: "Password Is Too Short!" }),
+    confirmPassword: z
+      .string()
+      .min(8, { error: "Confirm Password Is Too Short!" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
-export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-
+export function RegisterForm({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      confirmPassword: ""
-    }
-  })
+      confirmPassword: "",
+    },
+  });
 
   // const onSubmit : SubmitHandler<FieldValues> = (data) => {
   //   //when we do not want to use zod schema then we can directly use this SubmitHandler<FieldValues>
@@ -869,9 +885,8 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
 
   // another way is inferring types from the schema inside the useForm and the data
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-
-    console.log(data)
-  }
+    console.log(data);
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
@@ -926,7 +941,7 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     {/* <Input placeholder="Your Password" type="password" {...field} /> */}
-                    <Password  {...field} />
+                    <Password {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     Your Password
@@ -943,7 +958,7 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
                     {/* <Input placeholder="confirm Password" type="password" {...field} /> */}
-                    <Password  {...field} />
+                    <Password {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     Confirm Yore password
@@ -952,7 +967,9 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">Submit</Button>
+            <Button type="submit" className="w-full">
+              Submit
+            </Button>
           </form>
         </Form>
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
@@ -983,99 +1000,187 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
 
 ## 36-7 Setting Up Redux for State Management
 
-- Install the react-redux and redux-toolkit 
+- Install the react-redux and redux-toolkit
 
 ```
 bun add  @reduxjs/toolkit react-redux
 ```
-- CReate Store 
+
+- CReate Store
 
 ```ts
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore } from "@reduxjs/toolkit";
 
 export const store = configureStore({
-    reducer: {},
-})
+  reducer: {},
+});
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>
+export type RootState = ReturnType<typeof store.getState>;
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof store.dispatch
+export type AppDispatch = typeof store.dispatch;
 ```
-- wrap with redux provider 
+
+- wrap with redux provider
 
 ```tsx
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import { RouterProvider } from 'react-router'
-import { router } from './routes/index.tsx'
-import { ThemeProvider } from './providers/theme.provider.tsx'
-import { Provider as ReduxProvider } from "react-redux"
-import { store } from './redux/store.ts'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { RouterProvider } from "react-router";
+import { router } from "./routes/index.tsx";
+import { ThemeProvider } from "./providers/theme.provider.tsx";
+import { Provider as ReduxProvider } from "react-redux";
+import { store } from "./redux/store.ts";
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ReduxProvider store={store}>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <RouterProvider router={router} />
       </ThemeProvider>
     </ReduxProvider>
-  </StrictMode>,
-)
-
+  </StrictMode>
+);
 ```
-- create a hook for redux 
+
+- create a hook for redux
 
 ```ts
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState, AppDispatch } from './store'
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "./store";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
-export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
-export const useAppSelector = useSelector.withTypes<RootState>()
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+export const useAppSelector = useSelector.withTypes<RootState>();
 ```
-- create base Api 
+
+- create base Api
 
 ```ts
-
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-
-
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const baseApi = createApi({
-  reducerPath: 'baseApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api/v1' }), // we will use axios here. 
+  reducerPath: "baseApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1" }), // we will use axios here.
   endpoints: () => ({}),
-})
-
-
+});
 ```
 
-- add middleware in store 
+- add middleware in store
 
-```ts 
-
-import { configureStore } from '@reduxjs/toolkit'
-import { baseApi } from './baseApi'
+```ts
+import { configureStore } from "@reduxjs/toolkit";
+import { baseApi } from "./baseApi";
 
 export const store = configureStore({
-    reducer: {
-      [baseApi.reducerPath]: baseApi.reducer,
-
-    },
-    middleware: (getDefaultMiddleware) =>
+  reducer: {
+    [baseApi.reducerPath]: baseApi.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(baseApi.middleware),
-})
+});
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>
+export type RootState = ReturnType<typeof store.getState>;
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof store.dispatch
+export type AppDispatch = typeof store.dispatch;
 // optional, but required for refetchOnFocus/refetchOnReconnect behaviors
 // see `setupListeners` docs - takes an optional callback as the 2nd arg for customization
-setupListeners(store.dispatch)
+setupListeners(store.dispatch);
 ```
-- WE will use axios for fetch base api 
-  1. It Gives Us Interceptors(can not be done using regular fetch (used for token)), 
-  2. IT gives us setting base 
+
+- WE will use axios for fetch base api
+  1. It Gives Us Interceptors(can not be done using regular fetch (used for token)),
+  2. IT gives us setting base
+
+## 36-8 Configuring Axios and Creating axiosBaseQuery
+
+- Install Axios
+
+```
+bun add axios
+```
+
+- config -> index.ts
+
+```ts
+export const config = {
+  baseUrl: import.meta.env.BASE_URL,
+};
+```
+
+- lib -> axios.ts make an axios instance
+
+```ts
+import { config } from "@/config";
+import axios from "axios";
+
+export const axiosInstance = axios.create({
+  baseURL: config.baseUrl,
+});
+```
+
+- add a interception in axios file
+
+```ts
+import { config } from "@/config";
+import axios from "axios";
+
+export const axiosInstance = axios.create({
+  baseURL: config.baseUrl,
+});
+
+// Add a request interceptor
+axiosInstance.interceptors.request.use(
+  function (config) {
+    // Do something before request is sent
+    return config;
+  },
+  function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor
+axiosInstance.interceptors.response.use(
+  function onFulfilled(response) {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+  },
+  function onRejected(error) {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    return Promise.reject(error);
+  }
+);
+```
+
+- redux -> axiosBaseQuery.ts
+
+```ts
+import { axiosInstance } from "@/lib/axios"
+import type { BaseQueryFn } from "@reduxjs/toolkit/query"
+import type { AxiosError, AxiosRequestConfig } from "axios"
+
+
+const axiosBaseQuery = (): BaseQueryFn<{
+    url: string
+    method?: AxiosRequestConfig['method']
+    data?: AxiosRequestConfig['data']
+    params?: AxiosRequestConfig['params']
+    headers?: AxiosRequestConfig['headers']
+}, unknown, unknown> => async ({ url, method, data, params, headers }) => {
+    try {
+        const result = await axiosInstance({ url: url, method, data, params, headers })
+        return { data: result.data }
+    } catch (axiosError) {
+        const err = axiosError as AxiosError
+        return { error: { status: err.response?.status, data: err.response?.data || err.message } }
+    }
+}
+
+export default axiosBaseQuery
+```
