@@ -1211,28 +1211,50 @@ export const { useRegisterMutation } = authApi;
 
 ```tsx 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { Link, useNavigate } from "react-router";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Password from "@/components/ui/Password";
 import { useRegisterMutation } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
-const registerSchema = z.object({
-  name: z.string().min(3, { error: "Name Is Too Short!" }).max(50),
-  email: z.email(),
-  password: z.string().min(8, { error: "Password Is Too Short!" }),
-  confirmPassword: z.string().min(8, { error: "Confirm Password Is Too Short!" })
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"]
-});
 
-export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+const registerSchema = z
+  .object({
+    name: z
+      .string()
+      .min(3, {
+        error: "Name is too short",
+      })
+      .max(50),
+    email: z.email(),
+    password: z.string().min(8, { error: "Password is too short" }),
+    confirmPassword: z
+      .string()
+      .min(8, { error: "Confirm Password is too short" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password do not match",
+    path: ["confirmPassword"],
+  });
+
+export function RegisterForm({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   const [register] = useRegisterMutation();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -1240,9 +1262,9 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
       name: "",
       email: "",
       password: "",
-      confirmPassword: ""
-    }
-  })
+      confirmPassword: "",
+    },
+  });
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
     const userInfo = {
@@ -1255,10 +1277,14 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
       const result = await register(userInfo).unwrap();
       console.log(result);
       toast.success("User created successfully");
-    } catch (error) {
+      navigate("/verify");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error(error);
+      toast.success(error.data.message);
     }
   };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
@@ -1270,20 +1296,18 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
 
       <div className="grid gap-6">
         <Form {...form}>
-          {/* connecting hook form with the shadCN from component  */}
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* You're passing your custom onSubmit function to let React Hook Form execute it with form values after validation. */}
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="your name" {...field} />
+                    <Input placeholder="John Doe" {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
-                    Your Name
+                    This is your public display name.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -1296,10 +1320,14 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your Email" type="email" {...field} />
+                    <Input
+                      placeholder="john.doe@company.com"
+                      type="email"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription className="sr-only">
-                    Your Email
+                    This is your public display name.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -1312,11 +1340,10 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    {/* <Input placeholder="Your Password" type="password" {...field} /> */}
-                    <Password  {...field} />
+                    <Password {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
-                    Your Password
+                    This is your public display name.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -1329,19 +1356,21 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    {/* <Input placeholder="confirm Password" type="password" {...field} /> */}
-                    <Password  {...field} />
+                    <Password {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
-                    Confirm Yore password
+                    This is your public display name.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">Submit</Button>
+            <Button type="submit" className="w-full">
+              Submit
+            </Button>
           </form>
         </Form>
+
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
             Or continue with
@@ -1368,4 +1397,215 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
 }
 ```
 
-- 
+## 36-10 Understanding the Registration Flow with Verification
+- redux - > features ->  auth.Api.ts
+
+```ts 
+import { baseApi } from "@/redux/baseApi";
+
+const authApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation({
+      query: (userInfo) => ({
+        url: "/auth/login",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    register: builder.mutation({
+      query: (userInfo) => ({
+        url: "/user/register",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+  }),
+});
+
+export const { useRegisterMutation, useLoginMutation } = authApi;
+```
+
+- LoginForm.tsx
+
+```tsx
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { useLoginMutation } from "@/redux/features/auth/auth.api";
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
+
+import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
+
+export function LoginForm({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  const navigate = useNavigate();
+  const form = useForm();
+  const [login] = useLoginMutation();
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    try {
+      const res = await login(data).unwrap();
+      console.log(res);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error(err);
+
+      if (err.status === 401) {
+        toast.error("Your account is not verified");
+        navigate("/verify", { state: data.email });
+      }
+    }
+  };
+
+  return (
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="text-2xl font-bold">Login to your account</h1>
+        <p className="text-balance text-sm text-muted-foreground">
+          Enter your email below to login to your account
+        </p>
+      </div>
+      <div className="grid gap-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="john@example.com"
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="********"
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+          </form>
+        </Form>
+
+        <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+          <span className="relative z-10 bg-background px-2 text-muted-foreground">
+            Or continue with
+          </span>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full cursor-pointer"
+        >
+          Login with Google
+        </Button>
+      </div>
+      <div className="text-center text-sm">
+        Don&apos;t have an account?{" "}
+        <Link to="/register" replace className="underline underline-offset-4">
+          Register
+        </Link>
+      </div>
+    </div>
+  );
+}
+```
+- pages -> verify.tsx
+
+```tsx 
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
+
+export default function Verify() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [email] = useState(location.state);
+
+  useEffect(() => {
+    if (!email) {
+      navigate("/");
+    }
+  }, [email]);
+
+  return (
+    <div>
+      <h1> This is Verify component </h1>
+    </div>
+  );
+}
+```
+
+- routes -> index.ts 
+
+```ts 
+import App from "@/App";
+import About from "@/pages/About";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import Verify from "@/pages/verify";
+
+import { createBrowserRouter } from "react-router";
+
+export const router = createBrowserRouter(
+    [
+        {
+            Component: App,
+            path: "/",
+            children: [
+                {
+                    Component: About,
+                    path: "about"
+                }
+            ]
+        },
+        {
+            Component: Login,
+            path: "login"
+        },
+        {
+            Component: Register,
+            path: "register"
+        },
+        {
+            Component: Verify,
+            path: "/verify",
+        },
+
+    ]
+)
+```
