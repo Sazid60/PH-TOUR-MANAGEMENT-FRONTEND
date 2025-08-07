@@ -473,6 +473,7 @@ export function RegisterForm({
   );
 }
 ```
+## 36-4 Form Validation Using Zod
 
 ## 36-4 Form Validation Using Zod
 
@@ -1077,4 +1078,4 @@ setupListeners(store.dispatch)
 ```
 - WE will use axios for fetch base api 
   1. It Gives Us Interceptors(can not be done using regular fetch (used for token)), 
-  2. IT gives us setting base settings 
+  2. IT gives us setting base 
