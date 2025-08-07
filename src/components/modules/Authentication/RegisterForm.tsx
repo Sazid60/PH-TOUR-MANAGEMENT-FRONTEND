@@ -2,18 +2,34 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useForm } from "react-hook-form";
+import { useForm} from "react-hook-form";
 import { Link } from "react-router";
-
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+const formSchema = z.object({
+  name: z.string().min(2).max(50),
+})
 
 export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
 
-  const form = useForm()
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: ""
+    }
+  })
 
-  const onSubmit = (data) => {
+  // const onSubmit : SubmitHandler<FieldValues> = (data) => {
+  //   //when we do not want to use zod schema then we can directly use this SubmitHandler<FieldValues>
+
+  //   console.log(data)
+  // }
+
+  // another way is inferring types from the schema inside the useForm and the data
+  const onSubmit = (data : z.infer<typeof formSchema>) => {
+
     console.log(data)
   }
-
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
@@ -30,14 +46,14 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
             {/* You're passing your custom onSubmit function to let React Hook Form execute it with form values after validation. */}
             <FormField
               control={form.control}
-              name="username"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input placeholder="shadcn" {...field} />
                   </FormControl>
-                  <FormDescription>
+                  <FormDescription className="sr-only">
                     This is your public display name.
                   </FormDescription>
                   <FormMessage />
