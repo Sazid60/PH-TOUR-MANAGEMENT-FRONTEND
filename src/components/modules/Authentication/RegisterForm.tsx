@@ -7,7 +7,9 @@ import { Link } from "react-router";
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Password from "@/components/ui/Password";
-const formSchema = z.object({
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import { toast } from "sonner";
+const registerSchema = z.object({
   name: z.string().min(3, { error: "Name Is Too Short!" }).max(50),
   email: z.email(),
   password: z.string().min(8, { error: "Password Is Too Short!" }),
@@ -18,9 +20,10 @@ const formSchema = z.object({
 });
 
 export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  const [register] = useRegisterMutation();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -29,17 +32,21 @@ export function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLD
     }
   })
 
-  // const onSubmit : SubmitHandler<FieldValues> = (data) => {
-  //   //when we do not want to use zod schema then we can directly use this SubmitHandler<FieldValues>
+  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+    const userInfo = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    };
 
-  //   console.log(data)
-  // }
-
-  // another way is inferring types from the schema inside the useForm and the data
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-
-    console.log(data)
-  }
+    try {
+      const result = await register(userInfo).unwrap();
+      console.log(result);
+      toast.success("User created successfully");
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
