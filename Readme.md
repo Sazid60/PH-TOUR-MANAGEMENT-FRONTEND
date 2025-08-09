@@ -1161,40 +1161,55 @@ axiosInstance.interceptors.response.use(
 - redux -> axiosBaseQuery.ts
 
 ```ts
-import { axiosInstance } from "@/lib/axios"
-import type { BaseQueryFn } from "@reduxjs/toolkit/query"
-import type { AxiosError, AxiosRequestConfig } from "axios"
+import { axiosInstance } from "@/lib/axios";
+import type { BaseQueryFn } from "@reduxjs/toolkit/query";
+import type { AxiosError, AxiosRequestConfig } from "axios";
 
-
-const axiosBaseQuery = (): BaseQueryFn<{
-    url: string
-    method?: AxiosRequestConfig['method']
-    data?: AxiosRequestConfig['data']
-    params?: AxiosRequestConfig['params']
-    headers?: AxiosRequestConfig['headers']
-}, unknown, unknown> => async ({ url, method, data, params, headers }) => {
+const axiosBaseQuery =
+  (): BaseQueryFn<
+    {
+      url: string;
+      method?: AxiosRequestConfig["method"];
+      data?: AxiosRequestConfig["data"];
+      params?: AxiosRequestConfig["params"];
+      headers?: AxiosRequestConfig["headers"];
+    },
+    unknown,
+    unknown
+  > =>
+  async ({ url, method, data, params, headers }) => {
     try {
-        const result = await axiosInstance({ url: url, method, data, params, headers })
-        return { data: result.data }
+      const result = await axiosInstance({
+        url: url,
+        method,
+        data,
+        params,
+        headers,
+      });
+      return { data: result.data };
     } catch (axiosError) {
-        const err = axiosError as AxiosError
-        return { error: { status: err.response?.status, data: err.response?.data || err.message } }
+      const err = axiosError as AxiosError;
+      return {
+        error: {
+          status: err.response?.status,
+          data: err.response?.data || err.message,
+        },
+      };
     }
-}
+  };
 
-export default axiosBaseQuery
+export default axiosBaseQuery;
 ```
 
 ## 36-9 Handling User Account Creation
 
 - redux -> features -> auth - > auth.api.ts
 
-```ts 
+```ts
 import { baseApi } from "@/redux/baseApi";
 
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
     register: builder.mutation({
       query: (userInfo) => ({
         url: "/user/register",
@@ -1207,9 +1222,10 @@ const authApi = baseApi.injectEndpoints({
 
 export const { useRegisterMutation } = authApi;
 ```
+
 - RegisterForm.tsx
 
-```tsx 
+```tsx
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -1278,7 +1294,7 @@ export function RegisterForm({
       console.log(result);
       toast.success("User created successfully");
       navigate("/verify");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
       toast.success(error.data.message);
@@ -1398,9 +1414,10 @@ export function RegisterForm({
 ```
 
 ## 36-10 Understanding the Registration Flow with Verification
-- redux - > features ->  auth.Api.ts
 
-```ts 
+- redux - > features -> auth.Api.ts
+
+```ts
 import { baseApi } from "@/redux/baseApi";
 
 const authApi = baseApi.injectEndpoints({
@@ -1456,7 +1473,7 @@ export function LoginForm({
     try {
       const res = await login(data).unwrap();
       console.log(res);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);
 
@@ -1545,9 +1562,10 @@ export function LoginForm({
   );
 }
 ```
+
 - pages -> verify.tsx
 
-```tsx 
+```tsx
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
@@ -1570,9 +1588,9 @@ export default function Verify() {
 }
 ```
 
-- routes -> index.ts 
+- routes -> index.ts
 
-```ts 
+```ts
 import App from "@/App";
 import About from "@/pages/About";
 import Login from "@/pages/Login";
@@ -1581,33 +1599,30 @@ import Verify from "@/pages/verify";
 
 import { createBrowserRouter } from "react-router";
 
-export const router = createBrowserRouter(
-    [
-        {
-            Component: App,
-            path: "/",
-            children: [
-                {
-                    Component: About,
-                    path: "about"
-                }
-            ]
-        },
-        {
-            Component: Login,
-            path: "login"
-        },
-        {
-            Component: Register,
-            path: "register"
-        },
-        {
-            Component: Verify,
-            path: "/verify",
-        },
-
-    ]
-)
+export const router = createBrowserRouter([
+  {
+    Component: App,
+    path: "/",
+    children: [
+      {
+        Component: About,
+        path: "about",
+      },
+    ],
+  },
+  {
+    Component: Login,
+    path: "login",
+  },
+  {
+    Component: Register,
+    path: "register",
+  },
+  {
+    Component: Verify,
+    path: "/verify",
+  },
+]);
 ```
 
 ## 36-11 Visualizing axiosBaseQuery Payload and Router State
@@ -1621,14 +1636,14 @@ const authApi = baseApi.injectEndpoints({
       query: (userInfo) => ({
         url: "/auth/login",
         method: "POST",
-        data: userInfo,  // regular method is body : userInfo. If we use axios we have to use data otherwise we will not get payload
+        data: userInfo, // regular method is body : userInfo. If we use axios we have to use data otherwise we will not get payload
       }),
     }),
     register: builder.mutation({
       query: (userInfo) => ({
         url: "/user/register",
         method: "POST",
-        data: userInfo, // regular method is body : userInfo. If we use axios we have to use data otherwise we will not get payload 
+        data: userInfo, // regular method is body : userInfo. If we use axios we have to use data otherwise we will not get payload
       }),
     }),
   }),
@@ -1636,3 +1651,34 @@ const authApi = baseApi.injectEndpoints({
 
 export const { useRegisterMutation, useLoginMutation } = authApi;
 ```
+
+### Some Grooming
+
+#### Axios Instance (axiosInstance)
+
+- **Purpose:** A pre configured Axios client with default settings (base URL, headers, timeout, etc.) so you don’t repeat them for every request.
+- **Why it’s useful:**
+  1. DRY (Don’t Repeat Yourself) — avoids repeating baseURL, headers, etc.
+  2. Keeps all config in one place, so if the base URL changes, you update it once.
+
+#### Axios Interceptors
+
+- **Purpose:** Middleware that runs before a request is sent or after a response is received.
+- **Why it’s useful:**
+  1. Request interceptors:
+    - Add authentication tokens.
+    - Set content type headers.
+    - Log requests.
+  2. Response interceptors:
+    - Handle errors globally.
+    - Transform server responses before your app uses them.
+    - Automatically refresh tokens when expired.
+
+
+#### Axios Instance (axiosInstance)
+
+- **Purpose:** A bridge between Axios and RTK Query. RTK Query expects a baseQuery function that returns { data } or { error }. Axios doesn’t do that by default, so axiosBaseQuery converts Axios requests into the format RTK Query understands.
+
+- **Why it’s useful:**
+  1. Lets you use Axios inside RTK Query without rewriting Axios logic in every endpoint.
+  2. Centralizes error formatting and success handling for all RTK Query endpoints
