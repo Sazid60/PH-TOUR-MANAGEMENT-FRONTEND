@@ -13,7 +13,7 @@ import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
 
 import { Link, useNavigate } from "react-router";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 export function LoginForm({
   className,
@@ -31,7 +31,7 @@ export function LoginForm({
       console.error(err);
 
       if (err.status === 401) {
-        toast.error("Your account is not verified");
+        // toast.error("Your account is not verified");
         navigate("/verify", { state: data.email });
       }
     }
