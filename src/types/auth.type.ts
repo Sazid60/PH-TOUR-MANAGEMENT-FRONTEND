@@ -1,18 +1,13 @@
+export interface ISendOtp {
+  email: string;
+}
 
-export interface ISendOTP {
-  email: string
+export interface IVerifyOtp {
+  email: string;
+  otp: string;
 }
 
 export interface ILogin {
-  email: string,
-  password: string
+  email: string;
+  password: string;
 }
-
-export interface IRegister {
-  name : string,
-  phone : string,
-  email : string,
-  address : string,
-  password : string
-}
-
