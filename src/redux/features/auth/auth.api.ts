@@ -11,6 +11,13 @@ export const authApi = baseApi.injectEndpoints({
         data: userInfo,
       }),
     }),
+    logout: builder.mutation({
+      query: () => ({
+        url: "/auth/logout",
+        method: "POST",
+      }),
+      invalidatesTags: ["USER"],
+    }),
     register: builder.mutation({
       query: (userInfo) => ({
         url: "/user/register",
@@ -37,6 +44,7 @@ export const authApi = baseApi.injectEndpoints({
         url: "/user/me",
         method: "GET",
       }),
+      providesTags: ["USER"],
     }),
   }),
 });
@@ -46,5 +54,6 @@ export const {
   useLoginMutation,
   useSendOtpMutation,
   useVerifyOtpMutation,
-  useUserInfoQuery
+  useUserInfoQuery,
+  useLogoutMutation,
 } = authApi;
