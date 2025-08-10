@@ -26,13 +26,24 @@ export function LoginForm({
     try {
       const res = await login(data).unwrap();
       console.log(res);
-    } catch (err : any) {
+    } catch (err: any) {
       console.error(err);
 
-      if (err.status === 401) {
+      if (err.data.message === "Password Does Not Match") {
+        toast.error("Invalid Credentials!");
+      }
+
+      if (err.data.message === "User Is Not Verified") {
         toast.error("Your account is not verified");
         navigate("/verify", { state: data.email });
       }
+
+      // if (err.status === 401) {
+      // toast.error("Your account is not verified");
+      // navigate("/verify", { state: data.email });
+      // }
+
+
     }
   };
 
