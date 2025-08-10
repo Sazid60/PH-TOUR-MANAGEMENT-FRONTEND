@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { useSendOtpMutation } from "@/redux/features/auth/auth.api";
+import { useSendOtpMutation, useVerifyOtpMutation } from "@/redux/features/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dot } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -24,6 +24,7 @@ export default function Verify() {
   const [email] = useState(location.state);
   const [confirmed, setConfirmed] = useState(false)
   const [sendOtp] = useSendOtpMutation()
+  const [verifyOtp] = useVerifyOtpMutation()
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -33,22 +34,41 @@ export default function Verify() {
   })
 
   const handleConfirm = async () => {
+    const toastId = toast.loading("sending OTP")
     try {
 
       const res = await sendOtp({ email: email }).unwrap()
 
       if (res.success) {
-        toast.success(res.message)
+        toast.success(res.message, { id: toastId })
+        // Tells the toast library (probably react-hot-toast) to replace the existing toast with ID toastId
+        setConfirmed(true)
       }
 
-      setConfirmed(true)
+
     } catch (err) {
       console.log(err)
     }
   }
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    const toastId = toast.loading("Verifying OTP")
+    const userInfo = {
+      email,
+      otp: data.pin
+    }
 
-    console.log(data)
+    try {
+      // 
+      const res = await verifyOtp(userInfo).unwrap()
+
+      if (res.success) {
+        toast.success(res.message, { id: toastId })
+        setConfirmed(true)
+      }
+
+    } catch (err) {
+      console.log(err)
+    }
 
   }
 

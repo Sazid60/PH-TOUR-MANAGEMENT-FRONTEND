@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,10 +11,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
-import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
-
+import { type FieldValues, type SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
-// import { toast } from "sonner";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
@@ -26,12 +26,11 @@ export function LoginForm({
     try {
       const res = await login(data).unwrap();
       console.log(res);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
+    } catch (err : any) {
       console.error(err);
 
       if (err.status === 401) {
-        // toast.error("Your account is not verified");
+        toast.error("Your account is not verified");
         navigate("/verify", { state: data.email });
       }
     }
