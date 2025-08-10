@@ -1427,7 +1427,269 @@ import axiosBaseQuery from "./axiosBaseQuery";
 export const baseApi = createApi({
   reducerPath: "baseApi",
   // baseQuery: axiosBaseQuery(),
-  baseQuery: fetchBaseQuery ({baseUrl : "http://localhost:5000/api/v1", credentials : "include"}),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:5000/api/v1",
+    credentials: "include",
+  }),
   endpoints: () => ({}),
 });
 ```
+
+## 37-8 Implementing Google Login and Fixing Backend Authorization
+
+- For Google Login There is no Post patch or nothing to do we just have to open the link in another window
+- components -> Authentication -> LoginForm.tsx
+
+```tsx
+        <Button
+          type="button"
+          onClick={()=> window.open(`${config.baseUrl}/auth/google`)}
+          variant="outline"
+          className="w-full cursor-pointer"
+        >
+```
+
+- Google Login is set. But How Would We Get The User? From backend The plan was to set the token i authorization but in frontend we have decided to use the token from `HTTP Only Cookies`. We have to touch the backend code.
+- lets try it
+- redux - > features - > auth - > auth.api.ts
+
+```tsx
+userInfo: builder.query({
+      query: () => ({
+        url: "/user/me",
+        method: "GET",
+      }),
+    }),
+```
+
+```tsx
+import { baseApi } from "@/redux/baseApi";
+import type { IResponse, ISendOtp, IVerifyOtp } from "@/types";
+
+export const authApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation({
+      query: (userInfo) => ({
+        url: "/auth/login",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    register: builder.mutation({
+      query: (userInfo) => ({
+        url: "/user/register",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    sendOtp: builder.mutation<IResponse<null>, ISendOtp>({
+      query: (userInfo) => ({
+        url: "/otp/send",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    verifyOtp: builder.mutation<IResponse<null>, IVerifyOtp>({
+      query: (userInfo) => ({
+        url: "/otp/verify",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    userInfo: builder.query({
+      query: () => ({
+        url: "/user/me",
+        method: "GET",
+      }),
+    }),
+  }),
+});
+
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+} = authApi;
+```
+
+- Navbar.tsx 
+
+```tsx
+export default function Navbar() {
+  const {data} = useUserInfoQuery(undefined)
+  console.log(data)
+}
+```
+
+#### Lets get the User 
+
+- redux - > baseApi.ts
+
+```ts
+import { baseApi } from "@/redux/baseApi";
+import type { IResponse, ISendOtp, IVerifyOtp } from "@/types";
+
+
+export const authApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation({
+      query: (userInfo) => ({
+        url: "/auth/login",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    register: builder.mutation({
+      query: (userInfo) => ({
+        url: "/user/register",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    sendOtp: builder.mutation<IResponse<null>, ISendOtp>({
+      query: (userInfo) => ({
+        url: "/otp/send",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    verifyOtp: builder.mutation<IResponse<null>, IVerifyOtp>({
+      query: (userInfo) => ({
+        url: "/otp/verify",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    userInfo: builder.query({
+      query: () => ({
+        url: "/user/me",
+        method: "GET",
+      }),
+    }),
+  }),
+});
+
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+  useUserInfoQuery
+} = authApi;
+```
+
+- Navbar.tsx 
+
+```tsx
+export default function Navbar() {
+  const {data} = useUserInfoQuery(undefined)
+  console.log(data)
+  // all codes
+}
+```
+![alt text](image-2.png)
+
+- ooooooooooooooooooo! My GOoooooooooooooooooooooood ! Toke3n is not coming 
+
+
+![alt text](image-4.png)
+![alt text](image-5.png)
+
+- Here Its Coming in Cookies. From backend we hade done mechanism that it will be in headers. Though We can Set hardcoded token in Axios instance but this is not right. 
+
+![alt text](image-3.png)
+
+```ts 
+export const axiosInstance = axios.create({
+  baseURL: config.baseUrl,
+  withCredentials: true,
+  headers :{
+     Authorization: "Mmamah Token"
+  }
+});
+```
+- We will not do this rather we will tell the token to be set in cookies 
+
+- Backend  - > Middlewares -> checkAuth.ts
+
+```ts 
+const accessToken = req.headers.authorization || req.cookies.accessToken;
+```
+
+```ts 
+
+import { JwtPayload } from 'jsonwebtoken';
+
+
+
+import { NextFunction, Request, Response } from "express";
+import AppError from '../errorHelpers/AppError';
+import { verifyToken } from '../utils/jwt';
+import { envVars } from '../config/env';
+import httpStatus from 'http-status-codes';
+import { IsActive } from '../modules/user/user.interface';
+import { User } from '../modules/user/user.model';
+
+// ["ADMIN", "SUER_ADMIN"]
+
+// this is receiving all the role sent (converted into an array of the sent roles) from where the middleware has been called 
+export const checkAuth = (...authRoles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // we will get the access token from frontend inside headers. for now we will set in postman headers 
+        const accessToken = req.headers.authorization || req.cookies.accessToken;
+
+        if (!accessToken) {
+            throw new AppError(403, "No Token Received")
+        }
+
+        //  if there is token we will verify 
+
+        // const verifiedToken = jwt.verify(accessToken, "secret")
+
+        const verifiedToken = verifyToken(accessToken, envVars.JWT_ACCESS_SECRET) as JwtPayload
+
+        // console.log(verifiedToken)
+
+        // function verify(token: string, secretOrPublicKey: jwt.Secret | jwt.PublicKey, options?: jwt.VerifyOptions & {complete?: false;}): jwt.JwtPayload | string (+6 overloads)
+        const isUserExist = await User.findOne({ email: verifiedToken.email })
+        if (!isUserExist) {
+            throw new AppError(httpStatus.BAD_REQUEST, "User Does Not Exist")
+        }
+
+        if (!isUserExist.isVerified) {
+            throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
+        }
+
+        if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
+            throw new AppError(httpStatus.BAD_REQUEST, `User Is ${isUserExist.isActive}`)
+        }
+        if (isUserExist.isDeleted) {
+            throw new AppError(httpStatus.BAD_REQUEST, "User Is Deleted")
+        }
+
+
+        // authRoles = ["ADMIN", "SUPER_ADMIN"]
+        if (!authRoles.includes(verifiedToken.role)) {
+            throw new AppError(403, "You Are Not Permitted To View This Route ")
+        }
+
+        /*
+        const accessToken: string | undefined 
+        token returns string(if any error occurs during verifying token) or a JwtPayload(same as any type that payload can be anything). 
+        */
+
+        // we will make the verified token to go outside
+
+        // req has its own method like we can get req.bdy, req.params. req.query, req.headers. but we will not get req.user for this we need custom package. of user. 
+        req.user = verifiedToken
+
+        next()
+    } catch (error) {
+        next(error)
+    }
+}
+```
+- Now All Set 
+
+
