@@ -1336,27 +1336,98 @@ export default function Verify() {
 - what is the works?
 
 ```tsx
- useEffect(() => {
-    if (!email || !confirmed) {
-      return;
-    }
-    // If email is missing or confirmed is false, don’t start the timer.
+useEffect(() => {
+  if (!email || !confirmed) {
+    return;
+  }
+  // If email is missing or confirmed is false, don’t start the timer.
 
-    const timerId = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-      // setTimer reduces the timer value by 1 each second, but stops at 0 (no negative countdown).
-      console.log("Tick");
-    }, 1000);
+  const timerId = setInterval(() => {
+    setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    // setTimer reduces the timer value by 1 each second, but stops at 0 (no negative countdown).
+    console.log("Tick");
+  }, 1000);
 
-// initially if there is email and is confirmed the timer id is reset each time so that two time re render do not show imbalance
-    return () => clearInterval(timerId);
-// When the effect re-runs or the component unmounts, clearInterval stops the old timer.
-// This prevents multiple timers from running at once — which would cause the “imbalance” you mentioned (e.g., double countdown speed).
-  }, [email, confirmed]);
+  // initially if there is email and is confirmed the timer id is reset each time so that two time re render do not show imbalance
+  return () => clearInterval(timerId);
+  // When the effect re-runs or the component unmounts, clearInterval stops the old timer.
+  // This prevents multiple timers from running at once — which would cause the “imbalance” you mentioned (e.g., double countdown speed).
+}, [email, confirmed]);
 ```
 
 ## 37-6 Exploring Token Management Strategies and Choosing the Right Approach
-- After Login We are Getting access token and refresh Token in Response and also getting the tokens in cookies. 
-- For token we can use `Authorization Header` or  `Cookie `  As Well, The Secure was is Setting In `Cookie` because in case of `Authorization Header` we must have to store the tokens somewhere (local Storage or session storage) and this is not secure. Local storage has security issue and session storage has issues like if we reload the session tokens will be disappeared. we have to send the token using `HTTP ONLY COOKIE` that means the cookies will go to backend only using http request only. 
+
+- After Login We are Getting access token and refresh Token in Response and also getting the tokens in cookies.
+- For token we can use `Authorization Header` or `Cookie ` As Well, The Secure was is Setting In `Cookie` because in case of `Authorization Header` we must have to store the tokens somewhere (local Storage or session storage) and this is not secure. Local storage has security issue and session storage has issues like if we reload the session tokens will be disappeared. we have to send the token using `HTTP ONLY COOKIE` that means the cookies will go to backend only using http request only.
 
 ## 37-7 Accessing Cookies on the Client Side
+
+- We are sending Cookie from backend but when we login using frontend the tokens are not set to the cookies. First step is to consume the cookie we have to make out client ready.
+- if we enable the credentials in the axios instance it will set the cookies
+- lib -> axios.ts
+
+```ts
+import config from "@/config";
+import axios from "axios";
+
+export const axiosInstance = axios.create({
+  baseURL: config.baseUrl,
+  withCredentials: true,
+});
+```
+
+- But still there is some problems like if we reload the window the cookies will be disappeared. There is nothing to do in frontend
+- We must have to touch the backend. We must have to keep the secure true always
+
+#### PH-TOUR MANAGEMENT-BACKEND
+
+- utils -> setCookies.ts
+
+```ts
+import { Response } from "express";
+// import { envVars } from "../config/env";
+interface AuthToken {
+  accessToken?: string;
+  refreshToken?: string;
+}
+export const setAuthCookie = (res: Response, tokenInfo: AuthToken) => {
+  if (tokenInfo.accessToken) {
+    res.cookie("accessToken", tokenInfo.accessToken, {
+      httpOnly: true,
+      // secure: envVars.NODE_ENV === "production",
+      secure: true, // always keep true
+      // secure will be false as we were working in localhost
+      // for deployed project we will keep the secure true
+      sameSite: "none", // for setting the cookie in live link frontend
+    });
+  }
+  if (tokenInfo.refreshToken) {
+    res.cookie("refreshToken", tokenInfo.refreshToken, {
+      httpOnly: true,
+      // secure: envVars.NODE_ENV === "production",
+      secure: true, // always keep true
+      // secure will be false as we were working in localhost
+      // for deployed project we will keep the secure true
+      sameSite: "none", // for setting the cookie in live link frontend
+    });
+  }
+};
+```
+
+- Now The Cookie will be hold forever.
+
+### If we do not use axios how do we set it ?
+
+- redux - > baseApi.ts
+
+```ts
+import { createApi } from "@reduxjs/toolkit/query/react";
+import axiosBaseQuery from "./axiosBaseQuery";
+
+export const baseApi = createApi({
+  reducerPath: "baseApi",
+  // baseQuery: axiosBaseQuery(),
+  baseQuery: fetchBaseQuery ({baseUrl : "http://localhost:5000/api/v1", credentials : "include"}),
+  endpoints: () => ({}),
+});
+```
