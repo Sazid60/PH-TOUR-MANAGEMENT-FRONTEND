@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import config from "@/config";
 import { cn } from "@/lib/utils";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { type FieldValues, type SubmitHandler, useForm } from "react-hook-form";
@@ -109,6 +110,7 @@ export function LoginForm({
 
         <Button
           type="button"
+          onClick={()=> window.open(`${config.baseUrl}/auth/google`)}
           variant="outline"
           className="w-full cursor-pointer"
         >
