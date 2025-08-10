@@ -1354,3 +1354,9 @@ export default function Verify() {
 // This prevents multiple timers from running at once — which would cause the “imbalance” you mentioned (e.g., double countdown speed).
   }, [email, confirmed]);
 ```
+
+## 37-6 Exploring Token Management Strategies and Choosing the Right Approach
+- After Login We are Getting access token and refresh Token in Response and also getting the tokens in cookies. 
+- For token we can use `Authorization Header` or  `Cookie `  As Well, The Secure was is Setting In `Cookie` because in case of `Authorization Header` we must have to store the tokens somewhere (local Storage or session storage) and this is not secure. Local storage has security issue and session storage has issues like if we reload the session tokens will be disappeared. we have to send the token using `HTTP ONLY COOKIE` that means the cookies will go to backend only using http request only. 
+
+## 37-7 Accessing Cookies on the Client Side
