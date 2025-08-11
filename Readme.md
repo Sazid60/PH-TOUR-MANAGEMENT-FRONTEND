@@ -4,27 +4,28 @@ GitHub Link: https://github.com/Apollo-Level2-Web-Dev/ph-tour-management-system-
 
 ## 38-1 Setting Up the Dashboard and Admin Routes
 
-- Lets make a dashboard for all kind of role 
+- Lets make a dashboard for all kind of role
 
-- a common DashboardLayout.tsx for all roles 
+- a common DashboardLayout.tsx for all roles
 
-```tsx 
+```tsx
 import { Outlet } from "react-router";
 
 const DashboardLayout = () => {
-    return (
-        <div>
-            {/* <h1>This is DashboardLayout component</h1> */}
-            <Outlet />
-        </div>
-    );
+  return (
+    <div>
+      {/* <h1>This is DashboardLayout component</h1> */}
+      <Outlet />
+    </div>
+  );
 };
 
 export default DashboardLayout;
 ```
-- Routes -> index.tsx 
 
-```tsx 
+- Routes -> index.tsx
+
+```tsx
 import App from "@/App";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import About from "@/pages/About";
@@ -37,64 +38,61 @@ import Verify from "@/pages/verify";
 
 import { createBrowserRouter } from "react-router";
 
-export const router = createBrowserRouter(
-    [
-        {
-            Component: App,
-            path: "/",
-            children: [
-                {
-                    Component: About,
-                    path: "about"
-                }
-            ]
-        },
-        {
-            Component: DashboardLayout,
-            path: "/admin",
-            children: [
-                {
-                    Component: Analytics,
-                    path: "analytics"
-                },
-                {
-                    Component: AddTour,
-                    path: "add-tour"
-                }
-            ]
-        },
-        {
-            Component: DashboardLayout,
-            path: "/user",
-            children: [
-                {
-                    Component: Bookings,
-                    path: "bookings"
-                }
-            ]
-        },
-        {
-            Component: Login,
-            path: "login"
-        },
-        {
-            Component: Register,
-            path: "register"
-        },
-        {
-            Component: Verify,
-            path: "verify",
-        },
-
-    ]
-)
+export const router = createBrowserRouter([
+  {
+    Component: App,
+    path: "/",
+    children: [
+      {
+        Component: About,
+        path: "about",
+      },
+    ],
+  },
+  {
+    Component: DashboardLayout,
+    path: "/admin",
+    children: [
+      {
+        Component: Analytics,
+        path: "analytics",
+      },
+      {
+        Component: AddTour,
+        path: "add-tour",
+      },
+    ],
+  },
+  {
+    Component: DashboardLayout,
+    path: "/user",
+    children: [
+      {
+        Component: Bookings,
+        path: "bookings",
+      },
+    ],
+  },
+  {
+    Component: Login,
+    path: "login",
+  },
+  {
+    Component: Register,
+    path: "register",
+  },
+  {
+    Component: Verify,
+    path: "verify",
+  },
+]);
 ```
-- This is not right way to keep all the routes inb one single file we will split the routes and we have to make a mechanism like the dashboard is common but the routes will be dynamic. 
 
+- This is not right way to keep all the routes inb one single file we will split the routes and we have to make a mechanism like the dashboard is common but the routes will be dynamic.
 
 ## 38-2 Building the Dashboard Using ShadCN UI Blocks
 
-- here relative path is used 
+- here relative path is used
 
 ```ts
  {
@@ -113,9 +111,9 @@ export const router = createBrowserRouter(
         },
 ```
 
-- if want to make it absolute path 
+- if want to make it absolute path
 
-```ts 
+```ts
  {
             Component: DashboardLayout,
             path: "/admin",
@@ -132,58 +130,55 @@ export const router = createBrowserRouter(
         },
 ```
 
-
 | Type          | How It’s Resolved              | Depends on Parent Path? | Maintenance |
 | ------------- | ------------------------------ | ----------------------- | ----------- |
-| Relative path | Joins with parent path         | ✅ Yes                   | Easier      |
-| Absolute path | Taken as is, starting from `/` | ❌ No                    | More manual |
+| Relative path | Joins with parent path         | ✅ Yes                  | Easier      |
+| Absolute path | Taken as is, starting from `/` | ❌ No                   | More manual |
 
-- Install a sidebar from shadcn 
+- Install a sidebar from shadcn
 
 ```
 npx shadcn@latest add sidebar-01
 ```
 
-- layouts -> DashboardLayout.tsx 
+- layouts -> DashboardLayout.tsx
 
-```tsx 
-import { AppSidebar } from "@/components/app-sidebar"
+```tsx
+import { AppSidebar } from "@/components/app-sidebar";
 
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 import {
-    SidebarInset,
-    SidebarProvider,
-    SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { Outlet } from "react-router"
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Outlet } from "react-router";
 
 export default function DashboardLayout() {
-    return (
-        <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator
-                        orientation="vertical"
-                        className="mr-2 data-[orientation=vertical]:h-4"
-                    />
-
-                </header>
-                <div className="flex flex-1 flex-col gap-4 p-4">
-                    <Outlet />
-                </div>
-            </SidebarInset>
-        </SidebarProvider>
-    )
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4">
+          <Outlet />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  );
 }
-
 ```
 
 - components -> app-sidebar.tsx
 
-```tsx 
-import * as React from "react"
+```tsx
+import * as React from "react";
 
 import {
   Sidebar,
@@ -196,9 +191,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import Logo from "@/assets/icons/Logo"
-import { Link } from "react-router"
+} from "@/components/ui/sidebar";
+import Logo from "@/assets/icons/Logo";
+import { Link } from "react-router";
 
 // This is sample data.
 const data = {
@@ -210,7 +205,7 @@ const data = {
         {
           title: "Analytics",
           url: "/admin/analytics",
-        }
+        },
       ],
     },
     {
@@ -226,15 +221,15 @@ const data = {
           url: "/admin/add-tour-type",
         },
       ],
-    }
+    },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <Logo/>
+        <Logo />
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
@@ -257,60 +252,58 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
-
 ```
-- Here the Sidebar nav links should dynamic as we want to make a common dashboard for all roles 
 
+- Here the Sidebar nav links should dynamic as we want to make a common dashboard for all roles
 
 ## 38-3 Generating Routes Dynamically from Sidebar Item
 
-- we will generate routes for dynamic routes 
+- we will generate routes for dynamic routes
 - routes -> adminSidebarItem.ts
 
 ```tsx
 import AddTour from "@/pages/Admin/AddTour";
 import Analytics from "@/pages/Admin/Analytics";
 
-
 export const adminSidebarItems = [
-    {
-        title: "Dashboard",
-        url: "#",
-        items: [
-            {
-                title: "Analytics",
-                url: "/admin/analytics",
-                component: Analytics
-            }
-        ],
-    },
-    {
-        title: "Tour Management",
-        url: "#",
-        items: [
-            {
-                title: "Add Tour",
-                url: "/admin/add-tour",
-                component : AddTour
-            },
-            {
-                title: "Add Tour Type",
-                url: "/admin/add-tour-type",
-                component : AddTour
-            },
-        ],
-    }
-]
+  {
+    title: "Dashboard",
+    url: "#",
+    items: [
+      {
+        title: "Analytics",
+        url: "/admin/analytics",
+        component: Analytics,
+      },
+    ],
+  },
+  {
+    title: "Tour Management",
+    url: "#",
+    items: [
+      {
+        title: "Add Tour",
+        url: "/admin/add-tour",
+        component: AddTour,
+      },
+      {
+        title: "Add Tour Type",
+        url: "/admin/add-tour-type",
+        component: AddTour,
+      },
+    ],
+  },
+];
 ```
 
-- let make a function to convert the adminSidebarItems.ts items like routing items 
+- let make a function to convert the adminSidebarItems.ts items like routing items
 
-- components -> app-sidebar.tsx 
+- components -> app-sidebar.tsx
 
-```tsx 
-import * as React from "react"
+```tsx
+import * as React from "react";
 
 import {
   Sidebar,
@@ -323,21 +316,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import Logo from "@/assets/icons/Logo"
-import { Link } from "react-router"
-import { adminSidebarItems } from "@/routes/adminSidebarItems"
+} from "@/components/ui/sidebar";
+import Logo from "@/assets/icons/Logo";
+import { Link } from "react-router";
+import { adminSidebarItems } from "@/routes/adminSidebarItems";
 
 // This is sample data.
 const data = {
-  navMain: adminSidebarItems
-}
+  navMain: adminSidebarItems,
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <Logo/>
+        <Logo />
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
@@ -360,12 +353,232 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
-  )
+  );
+}
+```
+
+- types -> auth.types.ts
+
+```ts
+import type { ComponentType } from "react";
+
+export interface ISendOtp {
+  email: string;
 }
 
+export interface IVerifyOtp {
+  email: string;
+  otp: string;
+}
+
+export interface ILogin {
+  email: string;
+  password: string;
+}
+
+export interface ISidebarItems {
+  title: string;
+  items: {
+    title: string;
+    url: string;
+    component: ComponentType;
+  }[];
+}
+```
+
+- types -> index.ts
+
+```ts
+export type { ISendOtp, IVerifyOtp, ILogin, ISidebarItems } from "./auth.type";
+
+export interface IResponse<T> {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: T;
+}
+```
+
+- routes -> adminSidebarItems.ts
+
+```ts
+import AddTour from "@/pages/Admin/AddTour";
+import Analytics from "@/pages/Admin/Analytics";
+import type { ISidebarItems } from "@/types/auth.type";
+
+export const adminSidebarItems: ISidebarItems[] = [
+  {
+    title: "Dashboard",
+    items: [
+      {
+        title: "Analytics",
+        url: "/admin/analytics",
+        component: Analytics,
+      },
+    ],
+  },
+  {
+    title: "Tour Management",
+    items: [
+      {
+        title: "Add Tour",
+        url: "/admin/add-tour",
+        component: AddTour,
+      },
+      {
+        title: "Add Tour Type",
+        url: "/admin/add-tour-type",
+        component: AddTour,
+      },
+    ],
+  },
+];
+```
+
+- utils -> generateRoutes.ts
+
+```ts
+import type { ISidebarItems } from "@/types";
+
+export const generateRoutes = (sidebarItems: ISidebarItems[]) => {
+  // return sidebarItems.map((section) => section.items.map(route => ({
+  //     path : route.url,
+  //     component : route.component
+  // })))
+
+  // map is giving the output like [{...}], [{...},{...}] but we want a single array for this reason flatmap is used this gives result like [{..},{..},{...}]
+  return sidebarItems.flatMap((section) =>
+    section.items.map((route) => ({
+      path: route.url,
+      Component: route.component,
+    }))
+  );
+};
+```
+
+- final routes -> index.ts
+
+```ts
+import App from "@/App";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
+import About from "@/pages/About";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import Bookings from "@/pages/User/Bookings";
+import Verify from "@/pages/verify";
+import { generateRoutes } from "@/utils/generateRoutes";
+
+import { createBrowserRouter } from "react-router";
+import { adminSidebarItems } from "./adminSidebarItems";
+
+export const router = createBrowserRouter([
+  {
+    Component: App,
+    path: "/",
+    children: [
+      {
+        Component: About,
+        path: "about",
+      },
+    ],
+  },
+  {
+    Component: DashboardLayout,
+    path: "/admin",
+    children: [...generateRoutes(adminSidebarItems)],
+  },
+  {
+    Component: DashboardLayout,
+    path: "/user",
+    children: [
+      {
+        Component: Bookings,
+        path: "bookings",
+      },
+    ],
+  },
+  {
+    Component: Login,
+    path: "login",
+  },
+  {
+    Component: Register,
+    path: "register",
+  },
+  {
+    Component: Verify,
+    path: "verify",
+  },
+]);
+```
+
+## 38-4 Rendering Sidebar Items Based on User Role
+
+- src -> constants -> role.ts
+
+```ts
+export const role = {
+  superAdmin: "SUPER_ADMIN",
+  admin: "ADMIN",
+  user: "USER",
+};
+```
+- routes -> index.ts 
+
+```ts 
+import App from "@/App";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
+import About from "@/pages/About";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import Verify from "@/pages/verify";
+import { generateRoutes } from "@/utils/generateRoutes";
+
+import { createBrowserRouter } from "react-router";
+import { adminSidebarItems } from "./adminSidebarItems";
+import { userSidebarItems } from "./userSidebarItems";
+
+export const router = createBrowserRouter(
+    [
+        {
+            Component: App,
+            path: "/",
+            children: [
+                {
+                    Component: About,
+                    path: "about"
+                }
+            ]
+        },
+        {
+            Component: DashboardLayout,
+            path: "/admin",
+            children: [...generateRoutes(adminSidebarItems)]
+        },
+        {
+            Component: DashboardLayout,
+            path: "/user",
+            children: [
+                ...generateRoutes(userSidebarItems)
+            ]
+        },
+        {
+            Component: Login,
+            path: "login"
+        },
+        {
+            Component: Register,
+            path: "register"
+        },
+        {
+            Component: Verify,
+            path: "verify",
+        },
+
+    ]
+)
 ```
 - types -> auth.types.ts 
-
 
 ```ts 
 import type { ComponentType } from "react";
@@ -392,132 +605,96 @@ export interface ISidebarItems {
     component: ComponentType
   }[]
 }
+
+export type TRole = "SUPER_ADMIN" | "ADMIN" |"USER"
 ```
-- types ->  index.ts 
+- utils - > getSidebarItem.ts 
 
 ```ts 
-export type { ISendOtp, IVerifyOtp, ILogin, ISidebarItems } from "./auth.type";
+import { role } from "@/constants/role";
+import { adminSidebarItems } from "@/routes/adminSidebarItems";
+import { userSidebarItems } from "@/routes/userSidebarItems";
+import type { TRole } from "@/types";
 
-export interface IResponse<T> {
-  statusCode: number;
-  success: boolean;
-  message: string;
-  data: T;
-}
-```
--  routes -> adminSidebarItems.ts
+export const generateSidebarItems = (userRole: TRole) => {
 
-```ts 
-import AddTour from "@/pages/Admin/AddTour";
-import Analytics from "@/pages/Admin/Analytics";
-import type { ISidebarItems } from "@/types/auth.type";
+    switch (userRole) {
+        case role.superAdmin: {
+            return [...adminSidebarItems]
+        }
+        case role.admin: {
+            return [...adminSidebarItems]
+        }
 
+        case role.user: {
+            return [...userSidebarItems]
+        }
+        default:
+            return []
 
-export const adminSidebarItems : ISidebarItems[] = [
-    {
-        title: "Dashboard",
-        items: [
-            {
-                title: "Analytics",
-                url: "/admin/analytics",
-                component: Analytics
-            }
-        ],
-    },
-    {
-        title: "Tour Management",
-        items: [
-            {
-                title: "Add Tour",
-                url: "/admin/add-tour",
-                component : AddTour
-            },
-            {
-                title: "Add Tour Type",
-                url: "/admin/add-tour-type",
-                component : AddTour
-            },
-        ],
     }
-]
-```
-- utils -> generateRoutes.ts
-
-```ts 
-import type { ISidebarItems } from "@/types"
-
-
-
-export const generateRoutes = (sidebarItems : ISidebarItems[]) => {
-    // return sidebarItems.map((section) => section.items.map(route => ({
-    //     path : route.url,
-    //     component : route.component
-    // })))
-
-    // map is giving the output like [{...}], [{...},{...}] but we want a single array for this reason flatmap is used this gives result like [{..},{..},{...}]
-    return sidebarItems.flatMap((section) => section.items.map(route => ({
-        path : route.url,
-        Component : route.component
-    })))
-
 }
 ```
+- components -> app-sidebar.tsx
 
-- final routes -> index.ts 
+```tsx 
+import * as React from "react"
 
-```ts 
-import App from "@/App";
-import DashboardLayout from "@/components/layouts/DashboardLayout";
-import About from "@/pages/About";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import Bookings from "@/pages/User/Bookings";
-import Verify from "@/pages/verify";
-import { generateRoutes } from "@/utils/generateRoutes";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+} from "@/components/ui/sidebar"
+import Logo from "@/assets/icons/Logo"
+import { Link } from "react-router"
+import { generateSidebarItems } from "@/utils/generateSidebarItems"
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api"
 
-import { createBrowserRouter } from "react-router";
-import { adminSidebarItems } from "./adminSidebarItems";
 
-export const router = createBrowserRouter(
-    [
-        {
-            Component: App,
-            path: "/",
-            children: [
-                {
-                    Component: About,
-                    path: "about"
-                }
-            ]
-        },
-        {
-            Component: DashboardLayout,
-            path: "/admin",
-            children: [...generateRoutes(adminSidebarItems)]
-        },
-        {
-            Component: DashboardLayout,
-            path: "/user",
-            children: [
-                {
-                    Component: Bookings,
-                    path: "bookings"
-                }
-            ]
-        },
-        {
-            Component: Login,
-            path: "login"
-        },
-        {
-            Component: Register,
-            path: "register"
-        },
-        {
-            Component: Verify,
-            path: "verify",
-        },
 
-    ]
-)
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const {data : userData} = useUserInfoQuery(undefined)
+  // This is sample data.
+  const data = {
+    navMain: generateSidebarItems(userData?.data?.role)
+  }
+
+  console.log(data)
+  return (
+    <Sidebar {...props}>
+      <SidebarHeader>
+        <Logo />
+      </SidebarHeader>
+      <SidebarContent>
+        {/* We create a SidebarGroup for each parent. */}
+        {data.navMain.map((item) => (
+          <SidebarGroup key={item.title}>
+            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {item.items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link to={item.url}>{item.title}</Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
+      </SidebarContent>
+      <SidebarRail />
+    </Sidebar>
+  )
+}
+
 ```
+## 38-5 Recap and Discussion on Completed Work
