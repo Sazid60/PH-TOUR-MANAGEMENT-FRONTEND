@@ -1,7 +1,11 @@
 import App from "@/App";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import About from "@/pages/About";
+import AddTour from "@/pages/Admin/AddTour";
+import Analytics from "@/pages/Admin/Analytics";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Bookings from "@/pages/User/Bookings";
 import Verify from "@/pages/verify";
 
 import { createBrowserRouter } from "react-router";
@@ -19,6 +23,30 @@ export const router = createBrowserRouter(
             ]
         },
         {
+            Component: DashboardLayout,
+            path: "/admin",
+            children: [
+                {
+                    Component: Analytics,
+                    path: "analytics"
+                },
+                {
+                    Component: AddTour,
+                    path: "add-tour"
+                }
+            ]
+        },
+        {
+            Component: DashboardLayout,
+            path: "/user",
+            children: [
+                {
+                    Component: Bookings,
+                    path: "bookings"
+                }
+            ]
+        },
+        {
             Component: Login,
             path: "login"
         },
@@ -28,7 +56,7 @@ export const router = createBrowserRouter(
         },
         {
             Component: Verify,
-            path: "/verify",
+            path: "verify",
         },
 
     ]
