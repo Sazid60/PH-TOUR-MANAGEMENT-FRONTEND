@@ -1,3 +1,4 @@
+
 import { role } from "@/constants/role";
 import { adminSidebarItems } from "@/routes/adminSidebarItems";
 import { userSidebarItems } from "@/routes/userSidebarItems";
@@ -7,7 +8,7 @@ export const generateSidebarItems = (userRole: TRole) => {
 
     switch (userRole) {
         case role.superAdmin: {
-            return [...adminSidebarItems]
+            return [...adminSidebarItems, ...userSidebarItems]
         }
         case role.admin: {
             return [...adminSidebarItems]
