@@ -1588,17 +1588,18 @@ export default function Navbar() {
   // all codes
 }
 ```
-![alt text](image-2.png)
+<!-- ![alt text](image-2.png) -->
 
-- ooooooooooooooooooo! My GOoooooooooooooooooooooood ! Toke3n is not coming 
+- ooooooooooooooooooo! My GOoooooooooooooooooooooood ! Token is not coming 
 
+- Check In Network Tab 
+<!-- ![alt text](image-4.png)
 
-![alt text](image-4.png)
-![alt text](image-5.png)
+![alt text](image-5.png) -->
 
 - Here Its Coming in Cookies. From backend we hade done mechanism that it will be in headers. Though We can Set hardcoded token in Axios instance but this is not right. 
 
-![alt text](image-3.png)
+<!-- ![alt text](image-3.png) -->
 
 ```ts 
 export const axiosInstance = axios.create({
