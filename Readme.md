@@ -1250,3 +1250,255 @@ export default AddTourType;
       transformResponse : (response) => response.data
     }),
 ```
+## 38-9 Managing Data Display with ShadCN Table
+
+- pages -> admin -> AddTourType.tsx
+
+```tsx 
+
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useGetTourTypesQuery } from "@/redux/features/tour/tour.api";
+
+import { Trash2 } from "lucide-react";
+
+export default function AddTourType() {
+  const { data } = useGetTourTypesQuery(undefined);
+
+  return (
+    <div className="w-full max-w-7xl mx-auto px-5">
+      <div className="flex justify-between my-8">
+        <h1 className="text-xl font-semibold">Tour Types</h1>
+      </div>
+      <div className="border border-muted rounded-md">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Name</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data?.map((item: { name: string }) => (
+              <TableRow>
+                <TableCell className="font-medium w-full">
+                  {item?.name}
+                </TableCell>
+                <TableCell>
+                  <Button size="sm">
+                    <Trash2 />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+```
+
+## 38-10 Recap on Data Refetching and Cache Revalidation
+- component -> module -> Admin -> AddTourTypeModal.tsx
+
+```tsx
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useAddTourTypeMutation } from "@/redux/features/tour/tour.api";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+export function AddTourTypeModal() {
+  const form = useForm();
+  const [addTourType] = useAddTourTypeMutation();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onSubmit = async (data: any) => {
+    const res = await addTourType({ name: data.name }).unwrap();
+    if (res.success) {
+      toast.success("Tour Type Added");
+    }
+  };
+
+  return (
+    <Dialog>
+      <form>
+        <DialogTrigger asChild>
+          <Button>Add Tour Type</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add Tour Type</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form id="add-tour-type" onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tour Type Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Tour Type Name"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button type="submit" form="add-tour-type">
+              Save changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </form>
+    </Dialog>
+  );
+}
+```
+
+- pages -> admin -> addTourType.tsx 
+
+```tsx 
+import { AddTourTypeModal } from "@/components/modules/Admin/TourType/AddTourTypeModal";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useGetTourTypesQuery } from "@/redux/features/tour/tour.api";
+
+import { Trash2 } from "lucide-react";
+
+export default function AddTourType() {
+  const { data } = useGetTourTypesQuery(undefined);
+
+  return (
+    <div className="w-full max-w-7xl mx-auto px-5">
+      <div className="flex justify-between my-8">
+        <h1 className="text-xl font-semibold">Tour Types</h1>
+        <AddTourTypeModal />
+      </div>
+      <div className="border border-muted rounded-md">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Name</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data?.map((item: { name: string }) => (
+              <TableRow>
+                <TableCell className="font-medium w-full">
+                  {item?.name}
+                </TableCell>
+                <TableCell>
+                  <Button size="sm">
+                    <Trash2 />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+```
+
+- For Refreshing 
+
+- redux  -> baseApi.ts
+
+```ts 
+import { createApi } from "@reduxjs/toolkit/query/react";
+import axiosBaseQuery from "./axiosBaseQuery";
+
+export const baseApi = createApi({
+  reducerPath: "baseApi",
+  baseQuery: axiosBaseQuery(),
+  //   baseQuery: fetchBaseQuery({
+  //     baseUrl: config.baseUrl,
+  //     credentials: "include",
+  //   }),
+  tagTypes: ["USER", "TOUR"],
+  endpoints: () => ({}),
+});
+```
+
+- redux -> features -> tour -> tour.api.ts 
+
+```ts 
+import { baseApi } from "@/redux/baseApi";
+
+
+
+export const tourApi = baseApi.injectEndpoints({
+    endpoints: (builder) => ({
+        addTourType: builder.mutation({
+            query: (tourTypeName) => ({
+                url: "/tours/create-tour-type",
+                method: "POST",
+                data: tourTypeName,
+            }),
+            invalidatesTags: ["TOUR"],
+        }),
+
+        getTourTypes: builder.query({
+            query: () => ({
+                url: "/tours/tour-types",
+                method: "GET",
+            }),
+            providesTags: ["TOUR"],
+            transformResponse: (response) => response.data
+        }),
+    }),
+});
+
+export const {
+    useAddTourTypeMutation,
+    useGetTourTypesQuery
+} = tourApi;
+```
