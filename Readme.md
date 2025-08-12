@@ -523,9 +523,10 @@ export const role = {
   user: "USER",
 };
 ```
-- routes -> index.ts 
 
-```ts 
+- routes -> index.ts
+
+```ts
 import App from "@/App";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import About from "@/pages/About";
@@ -538,49 +539,45 @@ import { createBrowserRouter } from "react-router";
 import { adminSidebarItems } from "./adminSidebarItems";
 import { userSidebarItems } from "./userSidebarItems";
 
-export const router = createBrowserRouter(
-    [
-        {
-            Component: App,
-            path: "/",
-            children: [
-                {
-                    Component: About,
-                    path: "about"
-                }
-            ]
-        },
-        {
-            Component: DashboardLayout,
-            path: "/admin",
-            children: [...generateRoutes(adminSidebarItems)]
-        },
-        {
-            Component: DashboardLayout,
-            path: "/user",
-            children: [
-                ...generateRoutes(userSidebarItems)
-            ]
-        },
-        {
-            Component: Login,
-            path: "login"
-        },
-        {
-            Component: Register,
-            path: "register"
-        },
-        {
-            Component: Verify,
-            path: "verify",
-        },
-
-    ]
-)
+export const router = createBrowserRouter([
+  {
+    Component: App,
+    path: "/",
+    children: [
+      {
+        Component: About,
+        path: "about",
+      },
+    ],
+  },
+  {
+    Component: DashboardLayout,
+    path: "/admin",
+    children: [...generateRoutes(adminSidebarItems)],
+  },
+  {
+    Component: DashboardLayout,
+    path: "/user",
+    children: [...generateRoutes(userSidebarItems)],
+  },
+  {
+    Component: Login,
+    path: "login",
+  },
+  {
+    Component: Register,
+    path: "register",
+  },
+  {
+    Component: Verify,
+    path: "verify",
+  },
+]);
 ```
-- types -> auth.types.ts 
 
-```ts 
+- types -> auth.types.ts
+
+```ts
 import type { ComponentType } from "react";
 
 export interface ISendOtp {
@@ -598,47 +595,47 @@ export interface ILogin {
 }
 
 export interface ISidebarItems {
-  title: string,
+  title: string;
   items: {
-    title: string,
-    url: string,
-    component: ComponentType
-  }[]
+    title: string;
+    url: string;
+    component: ComponentType;
+  }[];
 }
 
-export type TRole = "SUPER_ADMIN" | "ADMIN" |"USER"
+export type TRole = "SUPER_ADMIN" | "ADMIN" | "USER";
 ```
-- utils - > getSidebarItem.ts 
 
-```ts 
+- utils - > getSidebarItem.ts
+
+```ts
 import { role } from "@/constants/role";
 import { adminSidebarItems } from "@/routes/adminSidebarItems";
 import { userSidebarItems } from "@/routes/userSidebarItems";
 import type { TRole } from "@/types";
 
 export const generateSidebarItems = (userRole: TRole) => {
-
-    switch (userRole) {
-        case role.superAdmin: {
-            return [...adminSidebarItems]
-        }
-        case role.admin: {
-            return [...adminSidebarItems]
-        }
-
-        case role.user: {
-            return [...userSidebarItems]
-        }
-        default:
-            return []
-
+  switch (userRole) {
+    case role.superAdmin: {
+      return [...adminSidebarItems];
     }
-}
+    case role.admin: {
+      return [...adminSidebarItems];
+    }
+
+    case role.user: {
+      return [...userSidebarItems];
+    }
+    default:
+      return [];
+  }
+};
 ```
+
 - components -> app-sidebar.tsx
 
-```tsx 
-import * as React from "react"
+```tsx
+import * as React from "react";
 
 import {
   Sidebar,
@@ -651,22 +648,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import Logo from "@/assets/icons/Logo"
-import { Link } from "react-router"
-import { generateSidebarItems } from "@/utils/generateSidebarItems"
-import { useUserInfoQuery } from "@/redux/features/auth/auth.api"
-
-
+} from "@/components/ui/sidebar";
+import Logo from "@/assets/icons/Logo";
+import { Link } from "react-router";
+import { generateSidebarItems } from "@/utils/generateSidebarItems";
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const {data : userData} = useUserInfoQuery(undefined)
+  const { data: userData } = useUserInfoQuery(undefined);
   // This is sample data.
   const data = {
-    navMain: generateSidebarItems(userData?.data?.role)
-  }
+    navMain: generateSidebarItems(userData?.data?.role),
+  };
 
-  console.log(data)
+  console.log(data);
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -693,43 +688,41 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
-
 ```
+
 ## 38-5 Recap and Discussion on Completed Work
-- we can grant access more to superAdmin 
 
-```ts 
+- we can grant access more to superAdmin
 
+```ts
 import { role } from "@/constants/role";
 import { adminSidebarItems } from "@/routes/adminSidebarItems";
 import { userSidebarItems } from "@/routes/userSidebarItems";
 import type { TRole } from "@/types";
 
 export const generateSidebarItems = (userRole: TRole) => {
-
-    switch (userRole) {
-        case role.superAdmin: {
-            return [...adminSidebarItems, ...userSidebarItems] // multi access
-        }
-        case role.admin: {
-            return [...adminSidebarItems]
-        }
-
-        case role.user: {
-            return [...userSidebarItems]
-        }
-        default:
-            return []
-
+  switch (userRole) {
+    case role.superAdmin: {
+      return [...adminSidebarItems, ...userSidebarItems]; // multi access
     }
-}
+    case role.admin: {
+      return [...adminSidebarItems];
+    }
+
+    case role.user: {
+      return [...userSidebarItems];
+    }
+    default:
+      return [];
+  }
+};
 ```
 
 - Navbar.tsx
 
-```tsx 
+```tsx
 import Logo from "@/assets/icons/Logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -755,10 +748,10 @@ import { role } from "@/constants/role";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
-  { href: "/", label: "Home", role : "PUBLIC" },
-  { href: "/about", label: "About" ,role : "PUBLIC" },
-  { href: "/admin", label: "Dashboard", role : role.admin },
-  { href: "/user", label: "Dashboard", role : role.user },
+  { href: "/", label: "Home", role: "PUBLIC" },
+  { href: "/about", label: "About", role: "PUBLIC" },
+  { href: "/admin", label: "Dashboard", role: role.admin },
+  { href: "/user", label: "Dashboard", role: role.user },
 ];
 
 export default function Navbar() {
@@ -876,7 +869,7 @@ export default function Navbar() {
 
 - Navbar.tsx (update in Dashboard Button)
 
-```tsx 
+```tsx
 import Logo from "@/assets/icons/Logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -1033,37 +1026,34 @@ export default function Navbar() {
 }
 ```
 
-- routes -> index.ts 
+- routes -> index.ts
 
-```ts 
+```ts
         {
             Component: DashboardLayout,
             path: "/admin",
-            
+
             children: [
                 {index : true, element : <Navigate to="/admin/analytics"/>},
                 ...generateRoutes(adminSidebarItems)]
         },
 ```
-- This Will by default navigate to the analytic page if we hit admin page. 
+
+- This Will by default navigate to the analytic page if we hit admin page.
 
 #### Lazy Loading
 
 - Lazy loading in React means loading components only when needed, using React.lazy and Suspense (or other code-splitting techniques), which makes your app faster to load and more efficient.
 
-- The problem of the site is now that in client side rendering the browser tries to load the ts js or tsx files then loads the contents. For home page public pages its ok. But the problem is its also loading the private route element like `Analytics.tsx` which is not required to load as its a admin route. W can prevent this by using `lazy loading`. Lazy Loading only loads the component when the component related functions are hit. 
+- The problem of the site is now that in client side rendering the browser tries to load the ts js or tsx files then loads the contents. For home page public pages its ok. But the problem is its also loading the private route element like `Analytics.tsx` which is not required to load as its a admin route. W can prevent this by using `lazy loading`. Lazy Loading only loads the component when the component related functions are hit.
 
-- adminSidebarItems.tsx 
+- adminSidebarItems.tsx
 
-```ts 
-
-const Analytics = lazy(() => import("@/pages/Admin/Analytics"))
-
-
+```ts
+const Analytics = lazy(() => import("@/pages/Admin/Analytics"));
 ```
 
-
-```tsx 
+```tsx
 import AddTour from "@/pages/Admin/AddTour";
 
 import type { ISidebarItems } from "@/types";
@@ -1071,35 +1061,85 @@ import { lazy } from "react";
 
 // import Analytics from "@/pages/Admin/Analytics";
 
-const Analytics = lazy(() => import("@/pages/Admin/Analytics"))
+const Analytics = lazy(() => import("@/pages/Admin/Analytics"));
 
+export const adminSidebarItems: ISidebarItems[] = [
+  {
+    title: "Dashboard",
+    items: [
+      {
+        title: "Analytics",
+        url: "/admin/analytics",
+        component: Analytics,
+      },
+    ],
+  },
+  {
+    title: "Tour Management",
+    items: [
+      {
+        title: "Add Tour",
+        url: "/admin/add-tour",
+        component: AddTour,
+      },
+      {
+        title: "Add Tour Type",
+        url: "/admin/add-tour-type",
+        component: AddTour,
+      },
+    ],
+  },
+];
+```
 
+## 38-7 Implementing Route Authorization via Higher-Order Components (HOC)
 
-export const adminSidebarItems : ISidebarItems[] = [
-    {
-        title: "Dashboard",
-        items: [
-            {
-                title: "Analytics",
-                url: "/admin/analytics",
-                component: Analytics
-            }
-        ],
-    },
-    {
-        title: "Tour Management",
-        items: [
-            {
-                title: "Add Tour",
-                url: "/admin/add-tour",
-                component : AddTour
-            },
-            {
-                title: "Add Tour Type",
-                url: "/admin/add-tour-type",
-                component : AddTour
-            },
-        ],
+- Make a secure routing
+
+- utils -> withAuth.tsx
+
+```tsx
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import type { TRole } from "@/types";
+import type { ComponentType } from "react";
+import { Navigate } from "react-router";
+
+export const withAuth = (Component: ComponentType, requiredRole?: TRole) => {
+  //  as we can not directly call a query inside a function so we have returned a component type function inside
+  return function AuthWrapper() {
+    const { data, isLoading } = useUserInfoQuery(undefined);
+
+    if (!isLoading && !data?.data?.email) {
+      return <Navigate to="/login" />;
     }
-]
+
+    if (requiredRole && !isLoading && requiredRole !== data?.data?.role) {
+      return <Navigate to="/unauthorized" />;
+    }
+    return <Component />;
+  };
+};
+```
+
+- we can easily wrap the route
+
+```ts
+       {
+            Component: App,
+            path: "/",
+            children: [
+                {
+                    Component: withAuth(About),
+                    path: "about"
+                }
+            ]
+        },
+        {
+            Component: withAuth(DashboardLayout, role.superAdmin as TRole),
+            path: "/admin",
+
+            children: [
+                { index: true, element: <Navigate to="/admin/analytics" /> },
+                ...generateRoutes(adminSidebarItems)]
+        },
 ```
