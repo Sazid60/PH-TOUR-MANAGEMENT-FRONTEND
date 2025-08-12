@@ -1143,3 +1143,110 @@ export const withAuth = (Component: ComponentType, requiredRole?: TRole) => {
                 ...generateRoutes(adminSidebarItems)]
         },
 ```
+
+## 38-8 Adding “Tour Type” Feature and Updating the Corresponding Backend Endpoint
+
+- add table
+
+```
+bunx --bun shadcn@latest add table
+```
+
+- redux -> features -> tour -> tour.api.ts
+
+```ts
+import { baseApi } from "@/redux/baseApi";
+
+export const tourApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    addTourType: builder.mutation({
+      query: (tourTypeName) => ({
+        url: "/tours/create-tour-type",
+        method: "POST",
+        data: tourTypeName,
+      }),
+    }),
+
+    getTourTypes: builder.query({
+      query: () => ({
+        url: "/tours/tour-types",
+        method: "GET",
+      }),
+    }),
+  }),
+});
+
+export const { useAddTourTypeMutation, useGetTourTypesQuery } = tourApi;
+```
+
+- routes -> adminSidebarItems.ts
+
+```ts
+import AddTour from "@/pages/Admin/AddTour";
+import AddTourType from "@/pages/Admin/AddTourType";
+
+import type { ISidebarItems } from "@/types";
+import { lazy } from "react";
+
+// import Analytics from "@/pages/Admin/Analytics";
+
+const Analytics = lazy(() => import("@/pages/Admin/Analytics"));
+
+export const adminSidebarItems: ISidebarItems[] = [
+  {
+    title: "Dashboard",
+    items: [
+      {
+        title: "Analytics",
+        url: "/admin/analytics",
+        component: Analytics,
+      },
+    ],
+  },
+  {
+    title: "Tour Management",
+    items: [
+      {
+        title: "Add Tour",
+        url: "/admin/add-tour",
+        component: AddTour,
+      },
+      {
+        title: "Add Tour Type",
+        url: "/admin/add-tour-type",
+        component: AddTourType,
+      },
+    ],
+  },
+];
+```
+
+- pages -> admin -> AAddTourType.tsx
+
+```tsx
+import { useGetTourTypesQuery } from "@/redux/features/tour/tour.api";
+
+const AddTourType = () => {
+  const { data } = useGetTourTypesQuery(undefined);
+  console.log(data);
+  return (
+    <div>
+      <h1>This is AddTourType component</h1>
+    </div>
+  );
+};
+
+export default AddTourType;
+```
+
+- Response will give us a lot of data like success , meta,data but we can transform the data using rtk like we can just get data 
+
+```ts 
+    getTourTypes: builder.query({
+      query: () => ({
+        url: "/tours/tour-types",
+        method: "GET",
+      }),
+      transformResponse : (response) => response.data
+    }),
+```
