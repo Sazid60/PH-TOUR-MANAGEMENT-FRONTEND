@@ -1,8 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AlertCircleIcon, ImageUpIcon, XIcon } from "lucide-react"
 
 import { useFileUpload } from "@/hooks/use-file-upload"
+import { useEffect } from "react"
 
-export default function Component() {
+export default function SingleImageUploader({onChange} : any) {
   const maxSizeMB = 5
   const maxSize = maxSizeMB * 1024 * 1024 // 5MB default
 
@@ -21,6 +24,16 @@ export default function Component() {
     accept: "image/*",
     maxSize,
   })
+
+  useEffect(() => {
+    if(files.length >0 ){
+      onChange(files[0].file)
+    } else{
+      onChange(null)
+    }
+  }, [files])
+
+  console.log("Inside Origin Ui Component" , files)
 
   const previewUrl = files[0]?.preview || null
 
@@ -91,20 +104,6 @@ export default function Component() {
           <span>{errors[0]}</span>
         </div>
       )}
-
-      <p
-        aria-live="polite"
-        role="region"
-        className="text-muted-foreground mt-2 text-center text-xs"
-      >
-        Single image uploader w/ max size ∙{" "}
-        <a
-          href="https://github.com/origin-space/originui/tree/main/docs/use-file-upload.md"
-          className="hover:text-foreground underline"
-        >
-          API
-        </a>
-      </p>
     </div>
   )
 }
