@@ -23,9 +23,14 @@ import { useState } from "react";
 
 import { useForm } from "react-hook-form";
 
+import { useAddDivisionMutation } from "@/redux/features/division/division.api";
+import { toast } from "sonner";
+
 
 export function AddDivisionModal() {
+    const [open, setOpen] = useState(false)
     const [image, setImage] = useState<File | null>(null)
+    const [addDivision] = useAddDivisionMutation()
 
     console.log("Image Inside Modal", image)
     const form = useForm({
@@ -39,10 +44,30 @@ export function AddDivisionModal() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
         console.log(data)
+
+        const formData = new FormData();
+
+        formData.append("data", JSON.stringify(data))
+        formData.append("file", image as File)
+
+        console.log(formData) // we will not be able to see form data 
+        console.log(formData.get("data"))
+        console.log(formData.get("file"))
+
+        try {
+            const res = await addDivision(formData).unwrap();
+            console.log(res)
+            toast.success("Division Created")
+            setOpen(false)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            toast.error(error.message)
+            console.log(error)
+        }
     };
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button>Add Vision</Button>
             </DialogTrigger>
@@ -93,7 +118,7 @@ export function AddDivisionModal() {
                     <DialogClose asChild>
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
-                    <Button type="submit" form="add-division">
+                    <Button disabled={!image} type="submit" form="add-division">
                         Save changes
                     </Button>
                 </DialogFooter>
