@@ -793,3 +793,110 @@ export function AddDivisionModal() {
     );
 }
 ```
+
+## 39-5 Handling Form Select Inputs
+
+- redux -> features  ->  division.api.ts 
+
+```ts 
+import { baseApi } from "@/redux/baseApi";
+
+
+
+export const divisionApi = baseApi.injectEndpoints({
+    endpoints: (builder) => ({
+        addDivision: builder.mutation({
+            query: (divisionData) => ({
+                url: "/division/create",
+                method: "POST",
+                data: divisionData,
+            }),
+            invalidatesTags: ["DIVISION"],
+        }),
+
+        getDivisions: builder.query({
+            query: () => ({
+                url: "/division",
+                method: "GET",
+            }),
+            providesTags: ["DIVISION"],
+            transformResponse: (response) => response.data
+        }),
+    }),
+});
+
+export const {
+useAddDivisionMutation,
+useGetDivisionsQuery
+} = divisionApi;
+```
+
+- redux -> features -> tour -> tour.api.ts 
+
+```ts 
+import { baseApi } from "@/redux/baseApi";
+
+
+
+
+export const tourApi = baseApi.injectEndpoints({
+    endpoints: (builder) => ({
+        addTour: builder.mutation({
+            query: (tourData) => ({
+                url: "/tour/create",
+                method: "POST",
+                data: tourData,
+            }),
+            invalidatesTags: ["TOUR"],
+        }),
+        addTourType: builder.mutation({
+            query: (tourTypeName) => ({
+                url: "/tours/create-tour-type",
+                method: "POST",
+                data: tourTypeName,
+            }),
+            invalidatesTags: ["TOUR"],
+        }),
+        removeTourType: builder.mutation({
+            query: (tourTypeId) => ({
+                url: `/tours/tour-types/${tourTypeId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["TOUR"],
+        }),
+
+        getTourTypes: builder.query({
+            query: () => ({
+                url: "/tours/tour-types",
+                method: "GET",
+            }),
+            providesTags: ["TOUR"],
+            transformResponse: (response) => response.data
+        }),
+    }),
+});
+
+export const {
+    useAddTourTypeMutation,
+    useGetTourTypesQuery,
+    useRemoveTourTypeMutation,
+    useAddTourMutation
+} = tourApi;
+```
+- redux -> baseApi.ts 
+
+```ts 
+import { createApi } from "@reduxjs/toolkit/query/react";
+import axiosBaseQuery from "./axiosBaseQuery";
+
+export const baseApi = createApi({
+  reducerPath: "baseApi",
+  baseQuery: axiosBaseQuery(),
+  //   baseQuery: fetchBaseQuery({
+  //     baseUrl: config.baseUrl,
+  //     credentials: "include",
+  //   }),
+  tagTypes: ["USER", "TOUR","DIVISION"],
+  endpoints: () => ({}),
+});
+```
