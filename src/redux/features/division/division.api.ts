@@ -10,15 +10,15 @@ export const divisionApi = baseApi.injectEndpoints({
                 method: "POST",
                 data: divisionData,
             }),
-            invalidatesTags: ["TOUR"],
+            invalidatesTags: ["DIVISION"],
         }),
 
-        getDivision: builder.query({
+        getDivisions: builder.query({
             query: () => ({
-                url: "/tours/tour-types",
+                url: "/division",
                 method: "GET",
             }),
-            providesTags: ["TOUR"],
+            providesTags: ["DIVISION"],
             transformResponse: (response) => response.data
         }),
     }),
@@ -26,5 +26,5 @@ export const divisionApi = baseApi.injectEndpoints({
 
 export const {
 useAddDivisionMutation,
-useGetDivisionQuery
+useGetDivisionsQuery
 } = divisionApi;
