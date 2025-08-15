@@ -6,16 +6,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { Form, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from "sonner";
 import z from "zod";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from '../../lib/utils';
+import { format, formatISO } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import MultipleImageUploader from "@/components/MultipleImageUploader";
+import type { IErrorResponse } from "@/types";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -51,7 +56,7 @@ export default function AddTour() {
     })
   );
 
-  const tourTypeOptions = tourTypeData?.data?.map(
+  const tourTypeOptions = tourTypeData?.map(
     (tourType: { _id: string; name: string }) => ({
       value: tourType._id,
       label: tourType.name,
@@ -171,7 +176,7 @@ export default function AddTour() {
     const formData = new FormData();
 
     formData.append("data", JSON.stringify(tourData));
-    images.forEach((image) => formData.append("files", image as File));
+    images.forEach((image) => formData.append("files", image as File)); // Remember we can not add array in form data. we must have to add in one single field  
 
     try {
       const res = await addTour(formData).unwrap();
@@ -494,7 +499,7 @@ export default function AddTour() {
                     <div className="flex gap-2" key={item.id}>
                       <FormField
                         control={form.control}
-                        name={`included.${index}.value`}
+                        name={`included.${index}.value`} // for formdata UseArrayField
                         render={({ field }) => (
                           <FormItem className="flex-1">
                             <FormControl>

@@ -7,7 +7,7 @@ export const tourApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         addTour: builder.mutation({
             query: (tourData) => ({
-                url: "/tour/create",
+                url: "/tours/create",
                 method: "POST",
                 data: tourData,
             }),
