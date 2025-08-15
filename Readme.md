@@ -3,11 +3,12 @@
 GitHub Link: https://github.com/Apollo-Level2-Web-Dev/ph-tour-management-system-frontend/tree/part-6
 
 ## 40-1 Overview of Dummy Components and ShadCN UI Blocks
-- For Home Page Components We will use Shadcn Components block 
+
+- For Home Page Components We will use Shadcn Components block
 
 [Shadcn Blocks](https://www.shadcnblocks.com/)
 
-- routes -> index.ts 
+- routes -> index.ts
 
 ```ts
 import App from "@/App";
@@ -27,89 +28,81 @@ import { role } from "@/constants/role";
 import type { TRole } from "@/types";
 import { HomePage } from "@/pages/HomePage";
 
-export const router = createBrowserRouter(
-    [
-        {
-            Component: App,
-            path: "/",
-            children: [
-                {
-                    Component: HomePage,
-                    index: true,
-                },
-                {
-                    Component: withAuth(About),
-                    path: "about"
-                },
-                {
-                    Component: withAuth(About),
-                    path: "about"
-                }
-            ]
-        },
-        {
-            Component: withAuth(DashboardLayout, role.superAdmin as TRole),
-            path: "/admin",
+export const router = createBrowserRouter([
+  {
+    Component: App,
+    path: "/",
+    children: [
+      {
+        Component: HomePage,
+        index: true,
+      },
+      {
+        Component: withAuth(About),
+        path: "about",
+      },
+      {
+        Component: withAuth(About),
+        path: "about",
+      },
+    ],
+  },
+  {
+    Component: withAuth(DashboardLayout, role.superAdmin as TRole),
+    path: "/admin",
 
-            children: [
-                { index: true, element: <Navigate to="/admin/analytics" /> },
-                ...generateRoutes(adminSidebarItems)]
-        },
-        {
-            Component: DashboardLayout,
-            path: "/user",
-            children: [
-                { index: true, element: <Navigate to="/user/bookings" /> },
-                ...generateRoutes(userSidebarItems)
-            ]
-        },
-        {
-            Component: Login,
-            path: "login"
-        },
-        {
-            Component: Register,
-            path: "register"
-        },
-        {
-            Component: Verify,
-            path: "verify",
-        },
-        {
-            Component: Unauthorized,
-            path: "/unauthorized",
-        },
-
-    ]
-)
+    children: [
+      { index: true, element: <Navigate to="/admin/analytics" /> },
+      ...generateRoutes(adminSidebarItems),
+    ],
+  },
+  {
+    Component: DashboardLayout,
+    path: "/user",
+    children: [
+      { index: true, element: <Navigate to="/user/bookings" /> },
+      ...generateRoutes(userSidebarItems),
+    ],
+  },
+  {
+    Component: Login,
+    path: "login",
+  },
+  {
+    Component: Register,
+    path: "register",
+  },
+  {
+    Component: Verify,
+    path: "verify",
+  },
+  {
+    Component: Unauthorized,
+    path: "/unauthorized",
+  },
+]);
 ```
 
-- pages - > Homepage.tsx 
+- pages - > Homepage.tsx
 
-```tsx 
+```tsx
 import { HeroSection } from "@/components/modules/HomePage/HeroSection";
 
-
-
-
-export  function HomePage() {
+export function HomePage() {
   return (
     <div>
-        <HeroSection/>  
+      <HeroSection />
     </div>
-  )
+  );
 }
-
 ```
 
-- components -> HomePage -> HeroSection.tsx 
+- components -> HomePage -> HeroSection.tsx
 
-```tsx 
+```tsx
 import Logo from "@/assets/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
-
-
 
 export function HeroSection() {
   return (
@@ -124,10 +117,10 @@ export function HeroSection() {
       <div className="relative z-10 container mx-auto">
         <div className="mx-auto flex max-w-5xl flex-col items-center">
           <div className="flex flex-col items-center gap-6 text-center">
-            <Logo/>
+            <Logo />
             <div>
               <h1 className="mb-6 text-2xl font-bold tracking-tight text-pretty lg:text-5xl">
-                Export The Beauty Of {" "}
+                Export The Beauty Of{" "}
                 <span className="text-primary">Bangladesh</span>
               </h1>
               <p className="mx-auto max-w-3xl text-muted-foreground lg:text-xl">
@@ -145,8 +138,438 @@ export function HeroSection() {
         </div>
       </div>
     </section>
-  )
+  );
+}
+```
+
+## 40-2 Type-Safe RTK Query GET Requests with Parameter Handling
+
+
+- routes -> index.ts
+
+```tsx
+import App from "@/App";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
+import About from "@/pages/About";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import Verify from "@/pages/verify";
+import { generateRoutes } from "@/utils/generateRoutes";
+
+import { createBrowserRouter, Navigate } from "react-router";
+import { adminSidebarItems } from "./adminSidebarItems";
+import { userSidebarItems } from "./userSidebarItems";
+import { withAuth } from "@/utils/withAuth";
+import Unauthorized from "@/pages/Unauthorized";
+import { role } from "@/constants/role";
+import type { TRole } from "@/types";
+import { HomePage } from "@/pages/HomePage";
+import Tours from "@/pages/Tours";
+import TourDetails from "@/pages/TourDetails";
+
+export const router = createBrowserRouter([
+  {
+    Component: App,
+    path: "/",
+    children: [
+      {
+        Component: HomePage,
+        index: true,
+      },
+      {
+        Component: withAuth(About),
+        path: "about",
+      },
+      {
+        Component: withAuth(About),
+        path: "about",
+      },
+      {
+        Component: Tours,
+        path: "tours",
+      },
+      {
+        Component: TourDetails,
+        path: "tours/:id",
+      },
+    ],
+  },
+  {
+    Component: withAuth(DashboardLayout, role.superAdmin as TRole),
+    path: "/admin",
+
+    children: [
+      { index: true, element: <Navigate to="/admin/analytics" /> },
+      ...generateRoutes(adminSidebarItems),
+    ],
+  },
+  {
+    Component: DashboardLayout,
+    path: "/user",
+    children: [
+      { index: true, element: <Navigate to="/user/bookings" /> },
+      ...generateRoutes(userSidebarItems),
+    ],
+  },
+  {
+    Component: Login,
+    path: "login",
+  },
+  {
+    Component: Register,
+    path: "register",
+  },
+  {
+    Component: Verify,
+    path: "verify",
+  },
+  {
+    Component: Unauthorized,
+    path: "/unauthorized",
+  },
+]);
+```
+
+- type -> tour.type.ts
+
+```ts
+export interface ITourPackage {
+  _id: string;
+  title: string;
+  slug: string;
+  startDate: string;
+  endDate: string;
+  arrivalLocation: string;
+  departureLocation: string;
+  location: string;
+  description: string;
+  costFrom: number;
+  maxGuest: number;
+  minAge: number;
+  division: string;
+  tourType: string;
+  amenities: string[];
+  included: string[];
+  excluded: string[];
+  tourPlan: string[];
+  images: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+- make tour query type safe
+
+- type -> index.ts
+
+```ts 
+export type { ISendOtp, IVerifyOtp, ILogin, ISidebarItems, TRole } from "./auth.type";
+export type { ITourPackage} from "./tour.type";
+
+export interface IResponse<T> {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: T;
 }
 
+type ZodIssue = {
+  code: string;
+  expected: string;
+  received: string;
+  path: string[];
+  message: string;
+};
+
+type ErrorSource = {
+  path: string;
+  message: string;
+};
+
+export interface IErrorResponse {
+  success: boolean;
+  message: string;
+  errorSources?: ErrorSource[];
+  err?: {
+    issues: ZodIssue[];
+    name: string;
+  };
+  stack?: string;
+}
 ```
-##
+
+
+- redux -> features -> tour -> tour.api.ts
+
+```ts
+        getAllTours: builder.query<ITourPackage[], unknown>({
+            query: (params) => ({
+                url: "/tour",
+                method: "GET",
+                params: params,
+            }),
+            providesTags: ["TOUR"],
+            transformResponse: (response: IResponse<ITourPackage[]>) => response.data,
+        }),
+```
+
+- Pages -> TOUR.tsa 
+
+```tsx
+import { Button } from "@/components/ui/button";
+
+
+
+import { Link, useSearchParams } from "react-router";
+
+
+import { useGetAllToursQuery } from "@/redux/features/tour/tour.api";
+import { TourFilters } from "@/components/modules/Tours/TourFilters";
+
+export default function Tours() {
+  const [searchParams] = useSearchParams();
+
+  const division = searchParams.get("division") || undefined;
+  const tourType = searchParams.get("tourType") || undefined;
+
+  const { data } = useGetAllToursQuery({ division, tourType });
+
+  return (
+    <div className="container mx-auto px-5 py-8 grid grid-cols-12 gap-5">
+      <TourFilters />
+      <div className="col-span-9 w-full">
+        {data?.map((item) => (
+          <div
+            key={item.slug}
+            className="border border-muted rounded-lg shadow-md overflow-hidden mb-6 flex"
+          >
+            <div className="w-2/5 bg-red-500 flex-shrink-0">
+              <img
+                src={item.images[0]}
+                alt={item.title}
+                className="object-cover w-full h-full "
+              />
+            </div>
+            <div className="p-6 flex-1">
+              <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+              <p className="text-muted-foreground mb-3">{item.description}</p>
+
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xl font-bold text-primary">
+                  From ৳{item.costFrom.toLocaleString()}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  Max {item.maxGuest} guests
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                <div>
+                  <span className="font-medium">From:</span>{" "}
+                  {item.departureLocation}
+                </div>
+                <div>
+                  <span className="font-medium">To:</span>{" "}
+                  {item.arrivalLocation}
+                </div>
+                <div>
+                  <span className="font-medium">Duration:</span>{" "}
+                  {item.tourPlan.length} days
+                </div>
+                <div>
+                  <span className="font-medium">Min Age:</span> {item.minAge}+
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-4">
+                {item.amenities.slice(0, 3).map((amenity, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-muted/50 text-primary text-xs rounded-full"
+                  >
+                    {amenity}
+                  </span>
+                ))}
+                {item.amenities.length > 3 && (
+                  <span className="px-2 py-1 bg-muted/50 text-muted-foreground text-xs rounded-full">
+                    +{item.amenities.length - 3} more
+                  </span>
+                )}
+              </div>
+
+              <Button asChild className="w-full">
+                <Link to={`/tours/${item._id}`}>View Details</Link>
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+- Pages  -> TourDetails.tsx 
+
+```tsx 
+import { Button } from "@/components/ui/button";
+import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
+import { useGetAllToursQuery } from "@/redux/features/tour/tour.api";
+import { format } from "date-fns";
+import { Link, useParams } from "react-router";
+
+export default function TourDetails() {
+  const { id } = useParams();
+  const { data, isLoading } = useGetAllToursQuery({ _id: id });
+
+  const { data: divisionData } = useGetDivisionsQuery(
+    {
+      _id: data?.[0]?.division,
+      fields: "name",
+    },
+    {
+      skip: !data,
+    }
+  );
+
+  console.log(divisionData);
+
+  const tourData = data?.[0];
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <div className="container mx-auto p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center  mb-8">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">{tourData?.title}</h1>
+          <div className="flex gap-4 text-gray-600 mb-4">
+            <span>📍 {tourData?.location}</span>
+            <span>💰 From ${tourData?.costFrom}</span>
+            <span>👥 Max {tourData?.maxGuest} guests</span>
+          </div>
+        </div>
+        <div>
+          <Button asChild>
+            <Link to={`/booking/${tourData?._id}`}>Book Now</Link>
+          </Button>
+        </div>
+      </div>
+
+      {/* Images */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {tourData?.images?.map((image, index) => (
+          <img
+            key={index}
+            src={image}
+            alt={`${tourData?.title} ${index + 1}`}
+            className="w-full h-48 object-cover rounded-lg"
+          />
+        ))}
+      </div>
+
+      {/* Tour Info */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Tour Details</h2>
+          <div className="space-y-2">
+            <p>
+              <strong>Dates:</strong>{" "}
+              {format(
+                new Date(
+                  tourData?.startDate ? tourData?.startDate : new Date()
+                ),
+                "PP"
+              )}{" "}
+              -{" "}
+              {format(
+                new Date(tourData?.endDate ? tourData?.endDate : new Date()),
+                "PP"
+              )}
+            </p>
+            <p>
+              <strong>Departure:</strong> {tourData?.departureLocation}
+            </p>
+            <p>
+              <strong>Arrival:</strong> {tourData?.arrivalLocation}
+            </p>
+            <p>
+              <strong>Division:</strong> {divisionData?.[0]?.name}
+            </p>
+            <p>
+              <strong>Tour Type:</strong> {tourData?.tourType}
+            </p>
+            <p>
+              <strong>Min Age:</strong> {tourData?.minAge} years
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Description</h2>
+          <p className="text-muted-foreground">{tourData?.description}</p>
+        </div>
+      </div>
+
+      {/* Amenities & Inclusions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Amenities</h3>
+          <ul className="space-y-1">
+            {tourData?.amenities?.map((amenity, index) => (
+              <li key={index} className="flex items-center">
+                <span className="text-green-500 mr-2">✓</span>
+                {amenity}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Included</h3>
+          <ul className="space-y-1">
+            {tourData?.included?.map((item, index) => (
+              <li key={index} className="flex items-center">
+                <span className="text-green-500 mr-2">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Excluded</h3>
+          <ul className="space-y-1">
+            {tourData?.excluded?.map((item, index) => (
+              <li key={index} className="flex items-center">
+                <span className="text-red-500 mr-2">✗</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Tour Plan */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-3">Tour Plan</h3>
+        <ol className="space-y-2">
+          {tourData?.tourPlan?.map((plan, index) => (
+            <li key={index} className="flex">
+              <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">
+                {index + 1}
+              </span>
+              {plan}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
+}
+```
+
+## 40-3 Managing Booking Data and Updating User Information
