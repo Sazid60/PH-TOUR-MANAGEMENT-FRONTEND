@@ -1,4 +1,5 @@
 export type { ISendOtp, IVerifyOtp, ILogin, ISidebarItems, TRole } from "./auth.type";
+export type { ITourPackage} from "./tour.type";
 
 export interface IResponse<T> {
   statusCode: number;
