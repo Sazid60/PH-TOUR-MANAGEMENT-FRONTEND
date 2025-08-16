@@ -1,4 +1,5 @@
-import { HeroSection } from "@/components/modules/HomePage/HeroSection";
+import HeroSection from "@/components/modules/HomePage/HeroSection";
+
 
 
 
