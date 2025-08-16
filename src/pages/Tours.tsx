@@ -6,7 +6,8 @@ import { Link, useSearchParams } from "react-router";
 
 
 import { useGetAllToursQuery } from "@/redux/features/tour/tour.api";
-import { TourFilters } from "@/components/modules/Tours/TourFilters";
+import TourFilters from "@/components/modules/Tours/TourFilters";
+
 
 export default function Tours() {
   const [searchParams] = useSearchParams();

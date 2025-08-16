@@ -1066,3 +1066,228 @@ export default function Booking() {
   );
 }
 ```
+
+## 40-5 Implementing Basic Filters with React and RTK Query, 40-6 Managing State in Browser URL Using React Router searchParams
+
+- Here a Crucial Prt arrived, Our Tour Component and Filtering component is separate, based on the filter component states we have to change the data of tour component, how to manage this as the state is in different Component? we can deal with this in different ways like we Can use `Redux state`, We can use `State Lifting` I amen decare state in tours then using in TourFilters. Those are not convenient. We will use `searchParams` of react router here and pass the information using params.   
+
+- components -> tours -> TourFilters.tsx 
+
+```tsx 
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
+import { useGetTourTypesQuery } from "@/redux/features/tour/tour.api";
+import { useSearchParams } from "react-router";
+
+export default function TourFilters() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const selectedDivision = searchParams.get("division") || undefined;
+  const selectedTourType = searchParams.get("tourType") || undefined;
+
+  const { data: divisionData, isLoading: divisionIsLoading } =
+    useGetDivisionsQuery(undefined);
+
+  const { data: tourTypeData, isLoading: tourTypeIsLoading } =
+    useGetTourTypesQuery({ limit: 1000, fields: "_id,name" });
+
+  const divisionOption = divisionData?.map(
+    (item: { _id: string; name: string }) => ({
+      label: item.name,
+      value: item._id,
+    })
+  );
+
+  const tourTypeOptions = tourTypeData?.map(
+    (item: { _id: string; name: string }) => ({
+      label: item.name,
+      value: item._id,
+    })
+  );
+
+  console.log(tourTypeOptions)
+
+  const handleDivisionChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);  // URLSearchParams is a built-in JavaScript object used to work with the query string of a URL.
+    params.set("division", value); //The set method of URLSearchParams updates or adds a query parameter.
+    setSearchParams(params); //setSearchParams is likely the setter function from useSearchParams() in React Router
+  };
+
+  const handleTourTypeChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("tourType", value);
+    setSearchParams(params); 
+  };
+
+  const handleClearFilter = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("division");
+    params.delete("tourType");
+    setSearchParams(params);
+  };
+
+  return (
+    <div className="col-span-3 w-full h-[500px] border border-muted rounded-md p-5 space-y-4">
+      <div className="flex justify-between items-center">
+        <h1>Filters</h1>
+        <Button size="sm" variant="outline" onClick={handleClearFilter}>
+          Clear Filter
+        </Button>
+      </div>
+      <div>
+        <Label className="mb-2">Division to visit</Label>
+        <Select
+          onValueChange={(value) => handleDivisionChange(value)}
+          value={selectedDivision ? selectedDivision : ""}
+          disabled={divisionIsLoading}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Divisions</SelectLabel>
+              {divisionOption?.map((item: { value: string; label: string }) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label className="mb-2">Tour Type</Label>
+        <Select
+          onValueChange={handleTourTypeChange}
+          value={selectedTourType ? selectedTourType : ""}
+          disabled={tourTypeIsLoading}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Divisions</SelectLabel>
+              {tourTypeOptions?.map(
+                (item: { value: string; label: string }) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                )
+              )}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+}
+```
+
+- Pages -> Tours.tsx 
+
+```tsx 
+import { Button } from "@/components/ui/button";
+
+
+
+import { Link, useSearchParams } from "react-router";
+
+
+import { useGetAllToursQuery } from "@/redux/features/tour/tour.api";
+import TourFilters from "@/components/modules/Tours/TourFilters";
+
+
+export default function Tours() {
+  const [searchParams] = useSearchParams();
+
+  const division = searchParams.get("division") || undefined;
+  const tourType = searchParams.get("tourType") || undefined;
+
+  const { data } = useGetAllToursQuery({ division, tourType });
+
+  return (
+    <div className="container mx-auto px-5 py-8 grid grid-cols-12 gap-5">
+      <TourFilters />
+      <div className="col-span-9 w-full">
+        {data?.map((item) => (
+          <div
+            key={item.slug}
+            className="border border-muted rounded-lg shadow-md overflow-hidden mb-6 flex"
+          >
+            <div className="w-2/5 bg-red-500 flex-shrink-0">
+              <img
+                src={item.images[0]}
+                alt={item.title}
+                className="object-cover w-full h-full "
+              />
+            </div>
+            <div className="p-6 flex-1">
+              <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+              <p className="text-muted-foreground mb-3">{item.description}</p>
+
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xl font-bold text-primary">
+                  From ৳{item.costFrom.toLocaleString()}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  Max {item.maxGuest} guests
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                <div>
+                  <span className="font-medium">From:</span>{" "}
+                  {item.departureLocation}
+                </div>
+                <div>
+                  <span className="font-medium">To:</span>{" "}
+                  {item.arrivalLocation}
+                </div>
+                <div>
+                  <span className="font-medium">Duration:</span>{" "}
+                  {item.tourPlan.length} days
+                </div>
+                <div>
+                  <span className="font-medium">Min Age:</span> {item.minAge}+
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-4">
+                {item.amenities.slice(0, 3).map((amenity, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-muted/50 text-primary text-xs rounded-full"
+                  >
+                    {amenity}
+                  </span>
+                ))}
+                {item.amenities.length > 3 && (
+                  <span className="px-2 py-1 bg-muted/50 text-muted-foreground text-xs rounded-full">
+                    +{item.amenities.length - 3} more
+                  </span>
+                )}
+              </div>
+
+              <Button asChild className="w-full">
+                <Link to={`/tours/${item._id}`}>View Details</Link>
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
