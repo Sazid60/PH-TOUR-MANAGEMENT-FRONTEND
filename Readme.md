@@ -1386,3 +1386,9 @@ export default function HeroSection() {
   );
 }
 ```
+## 40-8 Implementing Pagination with Previous and Next Buttons
+- Install PAGINATION 
+
+```
+bunx --bun shadcn@latest add pagination
+```

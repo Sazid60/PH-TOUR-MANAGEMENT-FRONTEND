@@ -9,22 +9,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { useGetTourTypesQuery, useRemoveTourTypeMutation } from "@/redux/features/tour/tour.api";
 
 
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useState } from "react";
 
 export default function AddTourType() {
-  const { data } = useGetTourTypesQuery(undefined);
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const { data } = useGetTourTypesQuery({page: currentPage});
+  console.log(data)
   const [removeTourType] = useRemoveTourTypeMutation()
 
-const handleRemoveTourType = async (tourId: string) => {
-const toastId = toast.loading("Removing Type")
+  const handleRemoveTourType = async (tourId: string) => {
+    const toastId = toast.loading("Removing Type")
     try {
       const res = await removeTourType(tourId).unwrap()
-      if(res.success){
-        toast.success("Removed",  {id :toastId})
+      if (res.success) {
+        toast.success("Removed", { id: toastId })
       }
     } catch (error) {
       console.log(error)
@@ -46,7 +59,7 @@ const toastId = toast.loading("Removing Type")
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map((item: { name: string, _id: string }) => (
+            {data?.data?.map((item: { name: string, _id: string }) => (
               <TableRow>
                 <TableCell className="font-medium w-full">
                   {item?.name}
@@ -63,6 +76,26 @@ const toastId = toast.loading("Removing Type")
             ))}
           </TableBody>
         </Table>
+      </div>
+      <div className="flex justify-end">
+        <div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious onClick={() => setCurrentPage((prev) => prev - 1)} />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink >{currentPage}</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext onClick={() => setCurrentPage((prev) => prev + 1)}/>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </div>
   );
