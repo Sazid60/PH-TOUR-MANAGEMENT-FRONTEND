@@ -144,7 +144,6 @@ export function HeroSection() {
 
 ## 40-2 Type-Safe RTK Query GET Requests with Parameter Handling
 
-
 - routes -> index.ts
 
 ```tsx
@@ -262,9 +261,15 @@ export interface ITourPackage {
 
 - type -> index.ts
 
-```ts 
-export type { ISendOtp, IVerifyOtp, ILogin, ISidebarItems, TRole } from "./auth.type";
-export type { ITourPackage} from "./tour.type";
+```ts
+export type {
+  ISendOtp,
+  IVerifyOtp,
+  ILogin,
+  ISidebarItems,
+  TRole,
+} from "./auth.type";
+export type { ITourPackage } from "./tour.type";
 
 export interface IResponse<T> {
   statusCode: number;
@@ -298,7 +303,6 @@ export interface IErrorResponse {
 }
 ```
 
-
 - redux -> features -> tour -> tour.api.ts
 
 ```ts
@@ -313,15 +317,12 @@ export interface IErrorResponse {
         }),
 ```
 
-- Pages -> TOUR.tsa 
+- Pages -> TOUR.tsa
 
 ```tsx
 import { Button } from "@/components/ui/button";
 
-
-
 import { Link, useSearchParams } from "react-router";
-
 
 import { useGetAllToursQuery } from "@/redux/features/tour/tour.api";
 import { TourFilters } from "@/components/modules/Tours/TourFilters";
@@ -409,9 +410,9 @@ export default function Tours() {
 }
 ```
 
-- Pages  -> TourDetails.tsx 
+- Pages -> TourDetails.tsx
 
-```tsx 
+```tsx
 import { Button } from "@/components/ui/button";
 import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
 import { useGetAllToursQuery } from "@/redux/features/tour/tour.api";
@@ -574,12 +575,10 @@ export default function TourDetails() {
 
 ## 40-3 Managing Booking Data and Updating User Information
 
-- pages -> booking.tsx 
+- pages -> booking.tsx
 
-```tsx 
-
-
- import { Button } from "@/components/ui/button";
+```tsx
+import { Button } from "@/components/ui/button";
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -589,12 +588,10 @@ export default function Booking() {
   const [guestCount, setGuestCount] = useState(1);
   const [totalAmount, setTotalAmount] = useState(0);
 
-
   console.log(totalAmount);
 
   const { id } = useParams();
   const { data, isLoading, isError } = useGetAllToursQuery({ _id: id });
-
 
   const tourData = data?.[0];
 
@@ -616,7 +613,7 @@ export default function Booking() {
     let bookingData;
 
     try {
-    console.log(bookingData)
+      console.log(bookingData);
     } catch (err) {
       console.log(err);
     }
@@ -752,9 +749,10 @@ export default function Booking() {
 ```
 
 ## 40-4 Creating Bookings and Processing Payments with SSLCOMMERZ
+
 - routes -> routes.index.ts
 
-```ts 
+```ts
 import App from "@/App";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import About from "@/pages/About";
@@ -777,111 +775,105 @@ import Booking from "@/pages/Booking";
 import { Success } from "@/pages/Payment/Success";
 import { Fail } from "@/pages/Payment/Fail";
 
-export const router = createBrowserRouter(
-    [
-        {
-            Component: App,
-            path: "/",
-            children: [
-                {
-                    Component: HomePage,
-                    index: true,
-                },
-                {
-                    Component: withAuth(About),
-                    path: "about"
-                },
-                {
-                    Component: withAuth(About),
-                    path: "about"
-                },
-                {
-                    Component: Tours,
-                    path: "tours",
-                },
-                {
-                    Component: TourDetails,
-                    path: "tours/:id",
-                },
-                {
-                    Component: withAuth(Booking),
-                    path: "booking/:id",
-                },
-            ]
-        },
-        {
-            Component: withAuth(DashboardLayout, role.superAdmin as TRole),
-            path: "/admin",
+export const router = createBrowserRouter([
+  {
+    Component: App,
+    path: "/",
+    children: [
+      {
+        Component: HomePage,
+        index: true,
+      },
+      {
+        Component: withAuth(About),
+        path: "about",
+      },
+      {
+        Component: withAuth(About),
+        path: "about",
+      },
+      {
+        Component: Tours,
+        path: "tours",
+      },
+      {
+        Component: TourDetails,
+        path: "tours/:id",
+      },
+      {
+        Component: withAuth(Booking),
+        path: "booking/:id",
+      },
+    ],
+  },
+  {
+    Component: withAuth(DashboardLayout, role.superAdmin as TRole),
+    path: "/admin",
 
-            children: [
-                { index: true, element: <Navigate to="/admin/analytics" /> },
-                ...generateRoutes(adminSidebarItems)]
-        },
-        {
-            Component: DashboardLayout,
-            path: "/user",
-            children: [
-                { index: true, element: <Navigate to="/user/bookings" /> },
-                ...generateRoutes(userSidebarItems)
-            ]
-        },
-        {
-            Component: Login,
-            path: "login"
-        },
-        {
-            Component: Register,
-            path: "register"
-        },
-        {
-            Component: Verify,
-            path: "verify",
-        },
-        {
-            Component: Unauthorized,
-            path: "/unauthorized",
-        },
-        {
-            Component: Success,
-            path: "/payment/success",
-        },
-        {
-            Component: Fail,
-            path: "/payment/fail",
-        },
-
-    ]
-)
+    children: [
+      { index: true, element: <Navigate to="/admin/analytics" /> },
+      ...generateRoutes(adminSidebarItems),
+    ],
+  },
+  {
+    Component: DashboardLayout,
+    path: "/user",
+    children: [
+      { index: true, element: <Navigate to="/user/bookings" /> },
+      ...generateRoutes(userSidebarItems),
+    ],
+  },
+  {
+    Component: Login,
+    path: "login",
+  },
+  {
+    Component: Register,
+    path: "register",
+  },
+  {
+    Component: Verify,
+    path: "verify",
+  },
+  {
+    Component: Unauthorized,
+    path: "/unauthorized",
+  },
+  {
+    Component: Success,
+    path: "/payment/success",
+  },
+  {
+    Component: Fail,
+    path: "/payment/fail",
+  },
+]);
 ```
 
-- redux  -> features  -> Booking -> booking.api.ts 
+- redux -> features -> Booking -> booking.api.ts
 
-```ts 
+```ts
 import { baseApi } from "@/redux/baseApi";
 
 export const bookingApi = baseApi.injectEndpoints({
-    endpoints: (builder) => ({
-       createBooking: builder.mutation({
-            query: (bookinGData) => ({
-                url: `/booking`,
-                method: "POST",
-                data : bookinGData
-            }),
-            invalidatesTags: ["BOOKING"],
-        }),
+  endpoints: (builder) => ({
+    createBooking: builder.mutation({
+      query: (bookinGData) => ({
+        url: `/booking`,
+        method: "POST",
+        data: bookinGData,
+      }),
+      invalidatesTags: ["BOOKING"],
     }),
+  }),
 });
 
-export const {
-useCreateBookingMutation
-} = bookingApi;
+export const { useCreateBookingMutation } = bookingApi;
 ```
 
-- pages -> Booking.tsx 
+- pages -> Booking.tsx
 
-```tsx 
-
-
+```tsx
 import { Button } from "@/components/ui/button";
 
 import { useEffect, useState } from "react";
@@ -893,13 +885,11 @@ export default function Booking() {
   const [guestCount, setGuestCount] = useState(1);
   const [totalAmount, setTotalAmount] = useState(0);
 
-
   console.log(totalAmount);
 
   const { id } = useParams();
   const { data, isLoading, isError } = useGetAllToursQuery({ _id: id });
-  const [createBooking] = useCreateBookingMutation()
-
+  const [createBooking] = useCreateBookingMutation();
 
   const tourData = data?.[0];
 
@@ -922,17 +912,17 @@ export default function Booking() {
     if (data) {
       bookingData = {
         tour: id,
-        guestCount: guestCount
-      }
+        guestCount: guestCount,
+      };
     }
 
     try {
-      const res = await createBooking(bookingData).unwrap()
+      const res = await createBooking(bookingData).unwrap();
 
-      if(res.success){
-        window.open(res.data.paymentUrl)
+      if (res.success) {
+        window.open(res.data.paymentUrl);
       }
-      console.log(res)
+      console.log(res);
     } catch (err) {
       console.log(err);
     }
@@ -1070,11 +1060,11 @@ export default function Booking() {
 ## 40-5 Implementing Basic Filters with React and RTK Query, 40-6 Managing State in Browser URL Using React Router searchParams, 40-7 Retrieving State from URL with searchParams
 
 - Here a Crucial Prt arrived, Our Tour Component and Filtering component is separate, based on the filter component states we have to change the data of tour component, how to manage this as the state is in different Component? we can deal with this in different ways like we Can use `Redux state`, We can use `State Lifting` I amen decare state in tours then using in TourFilters. Those are not convenient. We will use `searchParams` of react router here and pass the information using params.
-- why we have used `searchParams` ? The reason is we can share to others and they can see the information accurately. If states were used we could not share our state to others. Tour Component Becomes Independent because from hero section we can search from any page and then the desired type will be loaded in tour page 
+- why we have used `searchParams` ? The reason is we can share to others and they can see the information accurately. If states were used we could not share our state to others. Tour Component Becomes Independent because from hero section we can search from any page and then the desired type will be loaded in tour page
 
-- components -> tours -> TourFilters.tsx 
+- components -> tours -> TourFilters.tsx
 
-```tsx 
+```tsx
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -1116,10 +1106,10 @@ export default function TourFilters() {
     })
   );
 
-  console.log(tourTypeOptions)
+  console.log(tourTypeOptions);
 
   const handleDivisionChange = (value: string) => {
-    const params = new URLSearchParams(searchParams);  // URLSearchParams is a built-in JavaScript object used to work with the query string of a URL.
+    const params = new URLSearchParams(searchParams); // URLSearchParams is a built-in JavaScript object used to work with the query string of a URL.
     params.set("division", value); //The set method of URLSearchParams updates or adds a query parameter.
     setSearchParams(params); //setSearchParams is likely the setter function from useSearchParams() in React Router
   };
@@ -1127,7 +1117,7 @@ export default function TourFilters() {
   const handleTourTypeChange = (value: string) => {
     const params = new URLSearchParams(searchParams);
     params.set("tourType", value);
-    setSearchParams(params); 
+    setSearchParams(params);
   };
 
   const handleClearFilter = () => {
@@ -1196,19 +1186,15 @@ export default function TourFilters() {
 }
 ```
 
-- Pages -> Tours.tsx 
+- Pages -> Tours.tsx
 
-```tsx 
+```tsx
 import { Button } from "@/components/ui/button";
-
-
 
 import { Link, useSearchParams } from "react-router";
 
-
 import { useGetAllToursQuery } from "@/redux/features/tour/tour.api";
 import TourFilters from "@/components/modules/Tours/TourFilters";
-
 
 export default function Tours() {
   const [searchParams] = useSearchParams();
@@ -1293,9 +1279,9 @@ export default function Tours() {
 }
 ```
 
-- components -> HomePage -> HeroSection.tsx 
+- components -> HomePage -> HeroSection.tsx
 
-```tsx 
+```tsx
 import { Button } from "@/components/ui/button";
 import Logo from "@/assets/icons/Logo";
 import { Link } from "react-router";
@@ -1316,8 +1302,7 @@ export default function HeroSection() {
     undefined
   );
 
-  const { data: divisionData } =
-    useGetDivisionsQuery(undefined);
+  const { data: divisionData } = useGetDivisionsQuery(undefined);
 
   const divisionOption = divisionData?.map(
     (item: { _id: string; name: string }) => ({
@@ -1386,3 +1371,752 @@ export default function HeroSection() {
   );
 }
 ```
+
+## 40-8 Implementing Pagination with Previous and Next Buttons
+
+- Install PAGINATION
+
+```
+bunx --bun shadcn@latest add pagination
+```
+
+- Pages -> TourTypes.tsx
+
+```tsx
+import { DeleteConfirmation } from "@/components/DeleteConfirmation";
+import { AddTourTypeModal } from "@/components/modules/Admin/TourType/AddTourTypeModal";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  useGetTourTypesQuery,
+  useRemoveTourTypeMutation,
+} from "@/redux/features/tour/tour.api";
+
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
+
+export default function AddTourType() {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data } = useGetTourTypesQuery({ page: currentPage });
+  console.log(data);
+  const [removeTourType] = useRemoveTourTypeMutation();
+
+  const handleRemoveTourType = async (tourId: string) => {
+    const toastId = toast.loading("Removing Type");
+    try {
+      const res = await removeTourType(tourId).unwrap();
+      if (res.success) {
+        toast.success("Removed", { id: toastId });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-7xl mx-auto px-5">
+      <div className="flex justify-between my-8">
+        <h1 className="text-xl font-semibold">Tour Types</h1>
+        <AddTourTypeModal />
+      </div>
+      <div className="border border-muted rounded-md">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Name</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data?.data?.map((item: { name: string; _id: string }) => (
+              <TableRow>
+                <TableCell className="font-medium w-full">
+                  {item?.name}
+                </TableCell>
+                <TableCell>
+                  <DeleteConfirmation
+                    onConfirm={() => handleRemoveTourType(item._id)}
+                  >
+                    <Button size="sm">
+                      <Trash2 />
+                    </Button>
+                  </DeleteConfirmation>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex justify-end">
+        <div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => setCurrentPage((prev) => prev - 1)}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink>{currentPage}</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## 40-9 Handling Pagination with Page Number Buttons
+
+- pages -> admin ->AddTourType.tsx
+
+```tsx
+import { DeleteConfirmation } from "@/components/DeleteConfirmation";
+
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
+import {
+  useGetTourTypesQuery,
+  useRemoveTourTypeMutation,
+} from "@/redux/features/tour/tour.api";
+import { AddTourTypeModal } from "@/components/modules/Admin/TourType/AddTourTypeModal";
+
+export default function AddTourType() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(5);
+
+  const { data } = useGetTourTypesQuery({ page: currentPage, limit });
+  const [removeTourType] = useRemoveTourTypeMutation();
+
+  const handleRemoveTourType = async (tourId: string) => {
+    const toastId = toast.loading("Removing...");
+    try {
+      const res = await removeTourType(tourId).unwrap();
+
+      if (res.success) {
+        toast.success("Removed", { id: toastId });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const totalPage = data?.meta?.totalPage || 1;
+
+  //* Total page 2 => [0, 0]
+
+  return (
+    <div className="w-full max-w-7xl mx-auto px-5">
+      <div className="flex justify-between my-8">
+        <h1 className="text-xl font-semibold">Tour Types</h1>
+        <AddTourTypeModal />
+      </div>
+      <div className="border border-muted rounded-md">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Name</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data?.data?.map((item: { _id: string; name: string }) => (
+              <TableRow>
+                <TableCell className="font-medium w-full">
+                  {item?.name}
+                </TableCell>
+                <TableCell>
+                  <DeleteConfirmation
+                    onConfirm={() => handleRemoveTourType(item._id)}
+                  >
+                    <Button size="sm">
+                      <Trash2 />
+                    </Button>
+                  </DeleteConfirmation>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      {totalPage > 1 && (
+        <div className="flex justify-end mt-4">
+          <div>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPage }, (_, index) => index + 1).map(
+                  (page) => (
+                    <PaginationItem
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      <PaginationLink isActive={currentPage === page}>
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
+
+                {/* 1. Array.from({ length: totalPage }, (_, index) => index + 1)
+
+Array.from creates a new array.
+
+{ length: totalPage } → makes an array with that many "empty slots".
+
+(_, index) => index + 1 → fills it with numbers starting from 1 up to totalPage.
+Example: if totalPage = 5, the result will be [1, 2, 3, 4, 5].
+
+2. .map((page) => (...))
+
+Loops through each number from that array (1 through totalPage).
+
+For each page, it returns some JSX (a PaginationItem).
+
+3. <PaginationItem key={page} onClick={() => setCurrentPage(page)}>
+
+Each pagination item is given a unique key (required by React lists).
+
+onClick={() => setCurrentPage(page)} → when clicked, it updates the state currentPage to that number. */}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    className={
+                      currentPage === totalPage
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## 40-10 Resolving Race Conditions in RTK Query with Sequential Requests and Enhancing Data Fetching & Time Formatting
+
+- Components -> TourTypes.tsx
+
+```tsx
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
+import { useGetTourTypesQuery } from "@/redux/features/tour/tour.api";
+import { useSearchParams } from "react-router";
+
+export default function TourFilters() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const selectedDivision = searchParams.get("division") || undefined;
+  const selectedTourType = searchParams.get("tourType") || undefined;
+
+  const { data: divisionData, isLoading: divisionIsLoading } =
+    useGetDivisionsQuery(undefined);
+
+  const { data: tourTypeData, isLoading: tourTypeIsLoading } =
+    useGetTourTypesQuery({ limit: 1000, fields: "_id,name" });
+
+  const divisionOption = divisionData?.map(
+    (item: { _id: string; name: string }) => ({
+      label: item.name,
+      value: item._id,
+    })
+  );
+
+  const tourTypeOptions = tourTypeData?.data?.map(
+    (item: { _id: string; name: string }) => ({
+      label: item.name,
+      value: item._id,
+    })
+  );
+
+  console.log(tourTypeOptions);
+
+  const handleDivisionChange = (value: string) => {
+    const params = new URLSearchParams(searchParams); // URLSearchParams is a built-in JavaScript object used to work with the query string of a URL.
+    params.set("division", value); //The set method of URLSearchParams updates or adds a query parameter.
+    setSearchParams(params); //setSearchParams is likely the setter function from useSearchParams() in React Router
+  };
+
+  const handleTourTypeChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("tourType", value);
+    setSearchParams(params);
+  };
+
+  const handleClearFilter = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("division");
+    params.delete("tourType");
+    setSearchParams(params);
+  };
+
+  return (
+    <div className="col-span-3 w-full h-[500px] border border-muted rounded-md p-5 space-y-4">
+      <div className="flex justify-between items-center">
+        <h1>Filters</h1>
+        <Button size="sm" variant="outline" onClick={handleClearFilter}>
+          Clear Filter
+        </Button>
+      </div>
+      <div>
+        <Label className="mb-2">Division to visit</Label>
+        <Select
+          onValueChange={(value) => handleDivisionChange(value)}
+          value={selectedDivision ? selectedDivision : ""}
+          disabled={divisionIsLoading}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Divisions</SelectLabel>
+              {divisionOption?.map((item: { value: string; label: string }) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label className="mb-2">Tour Type</Label>
+        <Select
+          onValueChange={handleTourTypeChange}
+          value={selectedTourType ? selectedTourType : ""}
+          disabled={tourTypeIsLoading}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Divisions</SelectLabel>
+              {tourTypeOptions?.map(
+                (item: { value: string; label: string }) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                )
+              )}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+}
+```
+
+- Handle the date format
+
+```tsx
+<p>
+  <strong>Dates:</strong>{" "}
+  {format(
+    new Date(tourData?.startDate ? tourData?.startDate : new Date()),
+    "PP"
+  )}{" "}
+  - {format(new Date(tourData?.endDate ? tourData?.endDate : new Date()), "PP")}
+</p>
+```
+- Here is a situation like division data is dependent on Tour data, Tour data is fetching is delaying but in parallel division data are getting all the division data. Thi is Called Race Condition. We want to do it synchronously so we have to tell that bro hold on let the tour data come first. 
+
+```tsx 
+  const { data, isLoading } = useGetAllToursQuery({ _id: id });
+
+  const { data: divisionData } = useGetDivisionsQuery(
+    {
+      _id: data?.[0]?.division,
+      fields: "name",
+    },
+    {
+      skip: !data,
+    }
+  );
+```
+- Pages -> TourDetails.tsx 
+
+
+```tsx 
+import { Button } from "@/components/ui/button";
+import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
+import { useGetAllToursQuery } from "@/redux/features/tour/tour.api";
+import { format } from "date-fns";
+import { Link, useParams } from "react-router";
+
+export default function TourDetails() {
+  const { id } = useParams();
+  const { data, isLoading } = useGetAllToursQuery({ _id: id });
+
+  const { data: divisionData } = useGetDivisionsQuery(
+    {
+      _id: data?.[0]?.division,
+      fields: "name",
+    },
+    {
+      skip: !data,
+    }
+  );
+
+  console.log(divisionData);
+
+  const tourData = data?.[0];
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <div className="container mx-auto p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center  mb-8">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">{tourData?.title}</h1>
+          <div className="flex gap-4 text-gray-600 mb-4">
+            <span>📍 {tourData?.location}</span>
+            <span>💰 From ${tourData?.costFrom}</span>
+            <span>👥 Max {tourData?.maxGuest} guests</span>
+          </div>
+        </div>
+        <div>
+          <Button asChild>
+            <Link to={`/booking/${tourData?._id}`}>Book Now</Link>
+          </Button>
+        </div>
+      </div>
+
+      {/* Images */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {tourData?.images?.map((image, index) => (
+          <img
+            key={index}
+            src={image}
+            alt={`${tourData?.title} ${index + 1}`}
+            className="w-full h-48 object-cover rounded-lg"
+          />
+        ))}
+      </div>
+
+      {/* Tour Info */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Tour Details</h2>
+          <div className="space-y-2">
+            <p>
+              <strong>Dates:</strong>{" "}
+              {format(
+                new Date(
+                  tourData?.startDate ? tourData?.startDate : new Date()
+                ),
+                "PP"
+              )}{" "}
+              -{" "}
+              {format(
+                new Date(tourData?.endDate ? tourData?.endDate : new Date()),
+                "PP"
+              )}
+            </p>
+            <p>
+              <strong>Departure:</strong> {tourData?.departureLocation}
+            </p>
+            <p>
+              <strong>Arrival:</strong> {tourData?.arrivalLocation}
+            </p>
+            <p>
+              <strong>Division:</strong> {divisionData?.[0]?.name}
+            </p>
+            <p>
+              <strong>Tour Type:</strong> {tourData?.tourType}
+            </p>
+            <p>
+              <strong>Min Age:</strong> {tourData?.minAge} years
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Description</h2>
+          <p className="text-muted-foreground">{tourData?.description}</p>
+        </div>
+      </div>
+
+      {/* Amenities & Inclusions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Amenities</h3>
+          <ul className="space-y-1">
+            {tourData?.amenities?.map((amenity, index) => (
+              <li key={index} className="flex items-center">
+                <span className="text-green-500 mr-2">✓</span>
+                {amenity}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Included</h3>
+          <ul className="space-y-1">
+            {tourData?.included?.map((item, index) => (
+              <li key={index} className="flex items-center">
+                <span className="text-green-500 mr-2">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Excluded</h3>
+          <ul className="space-y-1">
+            {tourData?.excluded?.map((item, index) => (
+              <li key={index} className="flex items-center">
+                <span className="text-red-500 mr-2">✗</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Tour Plan */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-3">Tour Plan</h3>
+        <ol className="space-y-2">
+          {tourData?.tourPlan?.map((plan, index) => (
+            <li key={index} className="flex">
+              <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">
+                {index + 1}
+              </span>
+              {plan}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
+}
+
+
+```
+
+## 40-11 High-Level Overview of JavaScript Promises
+
+- we can keep in variable and the in some other time we will resolve or reject 
+
+```ts 
+// const myPromise = new Promise((resolve, reject) => resolve())
+// .then(() => console.log("Resolved"))
+// .catch(() => console.log("Rejected"))
+
+let savedResolve, saveReject;
+
+const myPromise = new Promise((resolve, reject) => {
+    savedResolve = resolve;
+    saveReject = reject;
+})
+
+savedResolve("Ami Resolve Hoye gesi!") // can be called from anywhere
+
+myPromise
+    .then((value) => console.log("Promise Resolved :", value))
+    .catch((err) => console.log("Promise Rejected :", err))
+
+savedResolve("Ami Resolve Hoye gesi!") // can be called from anywhere
+saveReject("Kuno Akta Error Hoye gese!")
+
+setTimeout(()=>{
+    savedResolve("Hehe etai Bastob");
+}, 3000)
+```
+
+## 40-12 Managing Token Expiration with Axios Interceptors
+- we will use axios interceptor for generating new access token on the go
+- axios.tsx 
+```tsx 
+// Add a response interceptor
+axiosInstance.interceptors.response.use(
+  (response) => {
+    console.log("Res Success!")
+    return response
+  },
+
+  async (error) => {
+
+
+    console.log("Request Failed", error.response)
+
+    if (error.response.status === 500 && error.response.data.message === "jwt expired") {
+      console.log("Your Token Is Expired")
+      try {
+        const res = await axiosInstance.post("/auth/refresh-token")
+        console.log("New Token Arrived",res)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    // for everything
+    return Promise.reject(error)
+  }
+);
+```
+
+## 40-13 Queuing Parallel Requests and Processing Them After Token Refresh
+
+- When New Access token in Regenerated we will do the request again by grabbing the request from the Axios Config 
+- The Problem is when a lot of request are coming in the mean time the token regenerated. which request is to resolve or how to deal with this situation? we need to resolve all. we need a mechanism to store the request then solve all after generating new access token. We need to handle request que here. 
+
+
+- axios 
+
+```ts
+// Add a response interceptor
+
+let isRefreshing = false
+
+let pendingQueue: {
+  resolve: (value: unknown) => void;
+  reject: (value: unknown) => void;
+}[] = []
+
+
+const processQueue = (error: unknown) => {
+  pendingQueue.forEach((promise) => {
+    if (error) {
+      promise.reject(error)
+    } else {
+      promise.resolve(null)
+    }
+  })
+
+  pendingQueue = []
+}
+
+axiosInstance.interceptors.response.use(
+  (response) => {
+    console.log("Res Success!")
+    return response
+  },
+
+  async (error) => {
+
+    const originalRequest = error.config as AxiosRequestConfig & {_retry: boolean};
+    console.log(originalRequest)
+
+    console.log("Request Failed", error.response)
+
+    if (error.response.status === 500 && error.response.data.message === "jwt expired" && !originalRequest._retry) {
+      console.log("Your Token Is Expired")
+
+      originalRequest._retry = true // for avoiding infinity loop 
+
+      if (isRefreshing) {
+        // before refreshing start store the requests
+        return new Promise((resolve, reject) => {
+          pendingQueue.push({ resolve, reject })
+        }).then(() => axiosInstance(originalRequest)).catch(error => Promise.reject(error))
+      }
+
+      isRefreshing = true
+
+      try {
+        const res = await axiosInstance.post("/auth/refresh-token")
+        console.log("New Token Arrived", res)
+
+        processQueue(null)
+
+        return axiosInstance(originalRequest)
+      } catch (error) {
+        console.log(error)
+
+
+        processQueue(error)
+
+        return Promise.reject(error)
+      } finally{
+        isRefreshing = false
+      }
+    }
+
+    // for everything
+    return Promise.reject(error)
+  }
+);
+```
+
+## 40-14 Project Wrap-Up and Final Remarks

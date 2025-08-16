@@ -1,5 +1,5 @@
 import { DeleteConfirmation } from "@/components/DeleteConfirmation";
-import { AddTourTypeModal } from "@/components/modules/Admin/TourType/AddTourTypeModal";
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -9,27 +9,44 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useGetTourTypesQuery, useRemoveTourTypeMutation } from "@/redux/features/tour/tour.api";
-
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useState } from "react";
+import { useGetTourTypesQuery, useRemoveTourTypeMutation } from "@/redux/features/tour/tour.api";
+import { AddTourTypeModal } from "@/components/modules/Admin/TourType/AddTourTypeModal";
 
 export default function AddTourType() {
-  const { data } = useGetTourTypesQuery(undefined);
-  const [removeTourType] = useRemoveTourTypeMutation()
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(5);
 
-const handleRemoveTourType = async (tourId: string) => {
-const toastId = toast.loading("Removing Type")
+  const { data } = useGetTourTypesQuery({ page: currentPage, limit });
+  const [removeTourType] = useRemoveTourTypeMutation();
+
+  const handleRemoveTourType = async (tourId: string) => {
+    const toastId = toast.loading("Removing...");
     try {
-      const res = await removeTourType(tourId).unwrap()
-      if(res.success){
-        toast.success("Removed",  {id :toastId})
+      const res = await removeTourType(tourId).unwrap();
+
+      if (res.success) {
+        toast.success("Removed", { id: toastId });
       }
-    } catch (error) {
-      console.log(error)
+    } catch (err) {
+      console.error(err);
     }
-  }
+  };
+
+  const totalPage = data?.meta?.totalPage || 1;
+
+  //* Total page 2 => [0, 0]
 
   return (
     <div className="w-full max-w-7xl mx-auto px-5">
@@ -46,14 +63,15 @@ const toastId = toast.loading("Removing Type")
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map((item: { name: string, _id: string }) => (
+            {data?.data?.map((item: { _id: string; name: string }) => (
               <TableRow>
                 <TableCell className="font-medium w-full">
                   {item?.name}
                 </TableCell>
                 <TableCell>
-
-                  <DeleteConfirmation onConfirm={() => handleRemoveTourType(item._id)}>
+                  <DeleteConfirmation
+                    onConfirm={() => handleRemoveTourType(item._id)}
+                  >
                     <Button size="sm">
                       <Trash2 />
                     </Button>
@@ -64,6 +82,71 @@ const toastId = toast.loading("Removing Type")
           </TableBody>
         </Table>
       </div>
+      {totalPage > 1 && (
+        <div className="flex justify-end mt-4">
+          <div>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPage }, (_, index) => index + 1).map(
+                  (page) => (
+                    <PaginationItem
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      <PaginationLink isActive={currentPage === page}>
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
+
+{/* 1. Array.from({ length: totalPage }, (_, index) => index + 1)
+
+Array.from creates a new array.
+
+{ length: totalPage } → makes an array with that many "empty slots".
+
+(_, index) => index + 1 → fills it with numbers starting from 1 up to totalPage.
+Example: if totalPage = 5, the result will be [1, 2, 3, 4, 5].
+
+2. .map((page) => (...))
+
+Loops through each number from that array (1 through totalPage).
+
+For each page, it returns some JSX (a PaginationItem).
+
+3. <PaginationItem key={page} onClick={() => setCurrentPage(page)}>
+
+Each pagination item is given a unique key (required by React lists).
+
+onClick={() => setCurrentPage(page)} → when clicked, it updates the state currentPage to that number. */}
+
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    className={
+                      currentPage === totalPage
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
