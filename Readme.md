@@ -2005,3 +2005,33 @@ setTimeout(()=>{
 ```
 
 ## 40-12 Managing Token Expiration with Axios Interceptors
+- we will use axios interceptor for generating new access token on the go
+- axios.tsx 
+```tsx 
+// Add a response interceptor
+axiosInstance.interceptors.response.use(
+  (response) => {
+    console.log("Res Success!")
+    return response
+  },
+
+  async (error) => {
+
+
+    console.log("Request Failed", error.response)
+
+    if (error.response.status === 500 && error.response.data.message === "jwt expired") {
+      console.log("Your Token Is Expired")
+      try {
+        const res = await axiosInstance.post("/auth/refresh-token")
+        console.log("New Token Arrived",res)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    // for everything
+    return Promise.reject(error)
+  }
+);
+```

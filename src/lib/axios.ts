@@ -32,29 +32,56 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+// // Add a response interceptor
+// axiosInstance.interceptors.response.use(
+//   function onFulfilled(response) {
+
+//     //     This runs after you get a response from the server.
+
+//     // Common uses:
+
+//     // Transform or format the data before it reaches your code.
+
+//     // Handle common error statuses (like redirect to login if 401 Unauthorized).
+
+//     // Retry failed requests automatically.
+
+//     // In your code, it currently just returns the response or error unchanged.
+//     // Any status code that lie within the range of 2xx cause this function to trigger
+//     // Do something with response data
+//     console.log("Axios", response);
+//     return response;
+//   },
+//   function onRejected(error) {
+//     // Any status codes that falls outside the range of 2xx cause this function to trigger
+//     // Do something with response error
+//     return Promise.reject(error);
+//   }
+// );
+
 // Add a response interceptor
 axiosInstance.interceptors.response.use(
-  function onFulfilled(response) {
-
-    //     This runs after you get a response from the server.
-
-    // Common uses:
-
-    // Transform or format the data before it reaches your code.
-
-    // Handle common error statuses (like redirect to login if 401 Unauthorized).
-
-    // Retry failed requests automatically.
-
-    // In your code, it currently just returns the response or error unchanged.
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
-    console.log("Axios", response);
-    return response;
+  (response) => {
+    console.log("Res Success!")
+    return response
   },
-  function onRejected(error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
-    return Promise.reject(error);
+
+  async (error) => {
+
+
+    console.log("Request Failed", error.response)
+
+    if (error.response.status === 500 && error.response.data.message === "jwt expired") {
+      console.log("Your Token Is Expired")
+      try {
+        const res = await axiosInstance.post("/auth/refresh-token")
+        console.log("New Token Arrived",res)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    // for everything
+    return Promise.reject(error)
   }
 );
