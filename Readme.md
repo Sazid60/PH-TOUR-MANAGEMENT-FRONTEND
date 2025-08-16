@@ -2035,3 +2035,88 @@ axiosInstance.interceptors.response.use(
   }
 );
 ```
+
+## 40-13 Queuing Parallel Requests and Processing Them After Token Refresh
+
+- When New Access token in Regenerated we will do the request again by grabbing the request from the Axios Config 
+- The Problem is when a lot of request are coming in the mean time the token regenerated. which request is to resolve or how to deal with this situation? we need to resolve all. we need a mechanism to store the request then solve all after generating new access token. We need to handle request que here. 
+
+
+- axios 
+
+```ts
+// Add a response interceptor
+
+let isRefreshing = false
+
+let pendingQueue: {
+  resolve: (value: unknown) => void;
+  reject: (value: unknown) => void;
+}[] = []
+
+
+const processQueue = (error: unknown) => {
+  pendingQueue.forEach((promise) => {
+    if (error) {
+      promise.reject(error)
+    } else {
+      promise.resolve(null)
+    }
+  })
+
+  pendingQueue = []
+}
+
+axiosInstance.interceptors.response.use(
+  (response) => {
+    console.log("Res Success!")
+    return response
+  },
+
+  async (error) => {
+
+    const originalRequest = error.config as AxiosRequestConfig & {_retry: boolean};
+    console.log(originalRequest)
+
+    console.log("Request Failed", error.response)
+
+    if (error.response.status === 500 && error.response.data.message === "jwt expired" && !originalRequest._retry) {
+      console.log("Your Token Is Expired")
+
+      originalRequest._retry = true // for avoiding infinity loop 
+
+      if (isRefreshing) {
+        // before refreshing start store the requests
+        return new Promise((resolve, reject) => {
+          pendingQueue.push({ resolve, reject })
+        }).then(() => axiosInstance(originalRequest)).catch(error => Promise.reject(error))
+      }
+
+      isRefreshing = true
+
+      try {
+        const res = await axiosInstance.post("/auth/refresh-token")
+        console.log("New Token Arrived", res)
+
+        processQueue(null)
+
+        return axiosInstance(originalRequest)
+      } catch (error) {
+        console.log(error)
+
+
+        processQueue(error)
+
+        return Promise.reject(error)
+      } finally{
+        isRefreshing = false
+      }
+    }
+
+    // for everything
+    return Promise.reject(error)
+  }
+);
+```
+
+## 40-14 Project Wrap-Up and Final Remarks
